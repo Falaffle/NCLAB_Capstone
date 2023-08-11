@@ -1,12 +1,12 @@
 import pandas as pd
 import sqlite3
+import os
+import ssl
+import smtplib
 from sqlite3 import Error
 from datetime import datetime, date
 from email.message import EmailMessage
 from dotenv import load_dotenv, dotenv_values
-import os
-import ssl
-import smtplib
 
 load_dotenv()
 
@@ -50,6 +50,8 @@ class Cal_Database:
         device_data = self.cur.execute("SELECT * FROM devices ORDER BY property_number")
         for row in device_data:
             self.property_numbers.append(row[0])
+
+        return self.property_numbers
 
     def display_data(self):
         """Displays all data from the database table"""
