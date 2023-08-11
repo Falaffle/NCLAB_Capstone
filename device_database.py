@@ -1,41 +1,27 @@
-import win32com.client as win32
 import pandas as pd
-import argparse
 import sqlite3
 from sqlite3 import Error
-from datetime import datetime, timedelta, date
+from datetime import datetime, date
 from email.message import EmailMessage
 from dotenv import load_dotenv, dotenv_values
 import os
 import ssl
 import smtplib
+
 load_dotenv()
 
 
 class Cal_Database:
     """A program that manages a device calibration database."""
 
-    def __init__(
-        self,
-        columns=[
-            "property_number",
-            "manufacturer",
-            "description",
-            "cal_date",
-            "cal_due",
-            "custodian_email",
-        ],
-        db_loc="device_database.db",
-    ):
+    def __init__(self, db_loc="device_database.db"):
+        """Initiates Cal_Database"""
+
         self.db_loc = db_loc
 
         self.conn = sqlite3.connect(self.db_loc)
 
         self.cur = self.conn.cursor()
-
-        self.parser = argparse.ArgumentParser()
-
-        self.columns = columns
 
         self.property_numbers = []
 
@@ -44,6 +30,8 @@ class Cal_Database:
         self.create_cal_table()
 
         self.generate_device_list()
+
+        self.remind()
 
     def create_cal_table(self):
         """Creates a new calibration table named devices if table does not exist"""
@@ -120,7 +108,7 @@ class Cal_Database:
         """Add devices from a csv file"""
 
         try:
-            df = pd.read_csv("additional_data.csv")
+            df = pd.read_csv("calibration_data.csv")
 
             df.to_sql("devices", self.conn, if_exists="append", index=False)
 
@@ -206,46 +194,65 @@ class Cal_Database:
 
         print("File saved!")
 
-    def send_email_outlook(self):
-        """Sends email reminders to custodians"""
+    def date_math(self, cal_due):
+        """Computes the remaining days until calibration expiration"""
 
-        olApp = win32.Dispatch("Outlook.Application")
-        olNS = olApp.GetNameSpace("MAPI")
+        x = date.today().strftime("%m/%d/%Y")
 
-        mail_item = olApp.CreateItem(0)
-        mail_item.Subject = "Device Calibration Reminder"
-        mail_item.BodyFormat = 1
-        mail_item.Body = (
-            "Greetings! One or more of your items are in need of calibration."
-        )
-        mail_item.Sender = "cal.reminder@outlook.com"
-        mail_item.To = "cal.reminder@outlook.com"
+        x = datetime.strptime(x, "%m/%d/%Y").date()
 
-        mail_item.Display()
-        mail_item.Save()
-        mail_item.Send()
+        y = datetime.strptime(cal_due, "%m/%d/%Y").date()
 
-    def send_email_gmail(self):
+        z = y - x
+
+        return z.days
+
+    def generate_email_list(self):
+        """Adds into a list custodian email with expiring devices"""
+
+        try:
+            device_data = self.cur.execute(
+                "SELECT * FROM devices ORDER BY property_number"
+            )
+            for row in device_data:
+                days = self.date_math(row[4])
+
+                if days <= 60 and row[5] not in self.emails:
+                    self.emails.append(row[5])
+
+            return self.emails
+
+        except Error:
+            print("Error: Calibration due dates must be in the form MM/DD/YYYY")
+
+    def send_email_gmail(self, email_receiver):
         """Sends email reminders to custodians using gmail"""
 
-        email_sender = 'firefoxmico@gmail.com'
+        email_sender = os.getenv("EMAIL")
         email_password = os.getenv("PASSWORD")
-        email_receiver = 'firefoxmico@gmail.com'
 
-        subject = 'Calibration Reminder'
+        subject = "Calibration Reminder"
         body = "Greetings,\n\nOne or more of your devices need to be calibrated.\n\nThank you."
 
         em = EmailMessage()
-        em['From'] = email_sender
-        em['To'] = email_receiver
-        em['subject'] = subject
+        em["From"] = email_sender
+        em["To"] = email_receiver
+        em["subject"] = subject
         em.set_content(body)
 
         context = ssl.create_default_context()
 
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as smtp:
             smtp.login(email_sender, email_password)
             smtp.sendmail(email_sender, email_receiver, em.as_string())
+
+    def remind(self):
+        """Sends an email reminder to custodians with upcoming calibration expiration"""
+
+        email_list = self.generate_email_list()
+        for i in email_list:
+            self.send_email_gmail(i)
+        print("Reminders sent!")
 
     def help(self):
         """Displays the commands and its description"""
@@ -259,42 +266,6 @@ class Cal_Database:
         print("REMIND - " + self.remind.__doc__ + "\n")
         print("SAVE - " + self.save_csv.__doc__ + "\n")
         print("UPDATE - " + self.update_device.__doc__ + "\n")
-
-    def remind(self):
-        """Sends an email reminder to custodians with upcoming calibration expiration"""
-
-        print(self.generate_email_list())
-        print("Reminders sent!")
-
-    def date_math(self, cal_due):
-        """Computes the remaining days until calibration expiration"""
-
-        x = date.today().strftime('%m/%d/%Y')
-
-        x = datetime.strptime(x, '%m/%d/%Y').date()
-
-        y = datetime.strptime(cal_due, '%m/%d/%Y').date()
-
-        z = y-x
-
-        return z.days
-    
-    def generate_email_list(self):
-        """Adds into a list custodian email with expiring devices"""
-
-        try:
-
-            device_data = self.cur.execute("SELECT * FROM devices ORDER BY property_number")
-            for row in device_data:
-                days = self.date_math(row[4])
-
-                if days <= 60 and row[5] not in self.emails:
-                    self.emails.append(row[5])
-
-            return self.emails
-
-        except Error:
-            print("Error: Calibration due dates must be in the form MM/DD/YYYY")
 
     def start(self):
         """The event loop"""
@@ -339,5 +310,4 @@ class Cal_Database:
 
 # Main program:
 C = Cal_Database()
-C.send_email_gmail()
-#C.start()
+C.start()

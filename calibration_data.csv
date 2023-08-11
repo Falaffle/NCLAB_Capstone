@@ -1,26 +1,26 @@
 property_number,manufacturer,description,cal_date,cal_due,custodian_email
-B000001,Highland Technologies,T680 Time Interval Counter,01/02/2023,01/01/2024,john_doe@sample.com
-B000002,Highland Technologies,T680 Time Interval Counter,01/02/2023,01/01/2024,john_doe@sample.com
-B000003,Highland Technologies,T680 Time Interval Counter,01/02/2023,01/01/2024,john_doe@sample.com
-B000004,Highland Technologies,T680 Time Interval Counter,01/02/2023,01/01/2024,john_doe@sample.com
-B000005,Highland Technologies,T680 Time Interval Counter,01/02/2023,01/01/2024,john_doe@sample.com
-B000006,Highland Technologies,T680 Time Interval Counter,01/02/2023,01/01/2024,john_doe@sample.com
-B000007,National Instruments,PXIe 5160 Oscilloscope,03/02/2023,03/02/2024,john_doe@sample.com
-B000008,National Instruments,PXIe 5160 Oscilloscope,03/02/2023,03/02/2024,john_doe@sample.com
-B000009,National Instruments,PXIe 5160 Oscilloscope,03/02/2023,03/02/2024,john_doe@sample.com
-B000010,National Instruments,PXIe 5160 Oscilloscope,03/02/2023,03/02/2024,john_doe@sample.com
-B000011,National Instruments,PXIe 5160 Oscilloscope,03/02/2023,03/02/2024,john_doe@sample.com
-B000012,National Instruments,PXIe 5160 Oscilloscope,03/02/2023,03/02/2024,john_doe@sample.com
-B000013,National Instruments,PXIe 5160 Oscilloscope,03/02/2023,03/02/2024,john_doe@sample.com
-B000014,National Instruments,PXIe 5160 Oscilloscope,03/02/2023,03/02/2024,john_doe@sample.com
-B000015,National Instruments,PXIe 5160 Oscilloscope,03/02/2023,03/02/2024,john_doe@sample.com
-B000016,National Instruments,PXIe 5160 Oscilloscope,03/02/2023,03/02/2024,john_doe@sample.com
-B000017,Fluke,Digital Multi-meter,08/03/2022,08/03/2023,john_doe@sample.com
-B000018,Fluke,Digital Multi-meter,08/03/2022,08/03/2023,john_doe@sample.com
-B000019,Newport,Optical Detector,07/01/2022,07/01/2023,john_doe@sample.com
-B000020,Newport,Optical Detector,07/01/2022,07/01/2023,john_doe@sample.com
-B000021,Thorlabs,Optical Power Meter,01/02/2023,01/01/2024,john_doe@sample.com
-B000022,Thorlabs,Optical Power Meter,01/02/2023,01/01/2024,john_doe@sample.com
-B000023,Thorlabs,Optical Power Meter,01/02/2023,01/01/2024,john_doe@sample.com
-B000024,Thorlabs,Optical Power Meter,01/02/2023,01/01/2024,john_doe@sample.com
-B000025,Thorlabs,Optical Power Meter,01/02/2023,01/01/2024,john_doe@sample.com
+B000001,Highland Technologies,T680 Time Interval Counter,01/02/2023,01/01/2024,mico_manio11@yahoo.com
+B000002,Highland Technologies,T680 Time Interval Counter,01/02/2023,01/01/2024,mico_manio11@yahoo.com
+B000003,Highland Technologies,T680 Time Interval Counter,01/02/2023,01/01/2024,mico_manio11@yahoo.com
+B000004,Highland Technologies,T680 Time Interval Counter,01/02/2023,01/01/2024,mico_manio11@yahoo.com
+B000005,Highland Technologies,T680 Time Interval Counter,01/02/2023,01/01/2024,mico_manio11@yahoo.com
+B000006,Highland Technologies,T680 Time Interval Counter,01/02/2023,01/01/2024,mico_manio11@yahoo.com
+B000007,National Instruments,PXIe 5160 Oscilloscope,03/02/2023,03/02/2024,mico_manio11@yahoo.com
+B000008,National Instruments,PXIe 5160 Oscilloscope,03/02/2023,03/02/2024,mico_manio11@yahoo.com
+B000009,National Instruments,PXIe 5160 Oscilloscope,03/02/2023,03/02/2024,mico_manio11@yahoo.com
+B000010,National Instruments,PXIe 5160 Oscilloscope,03/02/2023,03/02/2024,mico_manio11@yahoo.com
+B000011,National Instruments,PXIe 5160 Oscilloscope,03/02/2023,03/02/2024,mico_manio11@yahoo.com
+B000012,National Instruments,PXIe 5160 Oscilloscope,03/02/2023,03/02/2024,mico_manio11@yahoo.com
+B000013,National Instruments,PXIe 5160 Oscilloscope,03/02/2023,03/02/2024,mico_manio11@yahoo.com
+B000014,National Instruments,PXIe 5160 Oscilloscope,03/02/2023,03/02/2024,mico_manio11@yahoo.com
+B000015,National Instruments,PXIe 5160 Oscilloscope,03/02/2023,03/02/2024,mico_manio11@yahoo.com
+B000016,National Instruments,PXIe 5160 Oscilloscope,03/02/2023,03/02/2024,mico_manio11@yahoo.com
+B000017,Fluke,Digital Multi-meter,08/03/2022,08/03/2023,mico_manio11@yahoo.com
+B000018,Fluke,Digital Multi-meter,08/03/2022,08/03/2023,mico_manio11@yahoo.com
+B000019,Newport,Optical Detector,07/01/2022,07/01/2023,mico_manio11@yahoo.com
+B000020,Newport,Optical Detector,07/01/2022,07/01/2023,mico_manio11@yahoo.com
+B000021,Thorlabs,Optical Power Meter,01/02/2023,01/01/2024,mico_manio11@yahoo.com
+B000022,Thorlabs,Optical Power Meter,01/02/2023,01/01/2024,mico_manio11@yahoo.com
+B000023,Thorlabs,Optical Power Meter,01/02/2023,01/01/2024,mico_manio11@yahoo.com
+B000024,Thorlabs,Optical Power Meter,01/02/2023,01/01/2024,mico_manio11@yahoo.com
+B000025,Thorlabs,Optical Power Meter,01/02/2023,01/01/2024,mico_manio11@yahoo.com
