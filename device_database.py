@@ -31,7 +31,7 @@ class Cal_Database:
 
         self.generate_device_list()
 
-        self.remind()
+        #self.remind()
 
     def create_cal_table(self):
         """Creates a new calibration table named devices if table does not exist"""
@@ -77,8 +77,23 @@ class Cal_Database:
             pn_prompt = input("Enter device property number.\n")
             mn_prompt = input("Enter device manufacturer.\n")
             des_prompt = input("Enter device description.\n")
-            date_prompt = input("Enter calibration date.\n")
-            due_prompt = input("Enter cal due date.\n")
+            
+            try:
+                date_prompt = input("Enter calibration date.\n")
+                datetime.strptime(date_prompt, "%m/%d/%Y").date()
+
+            except ValueError:
+                print("Error: Date is not in the correct format mm/dd/yyyy")
+                return False
+
+            try:
+                due_prompt = input("Enter cal due date.\n")
+                datetime.strptime(due_prompt, "%m/%d/%Y").date()
+
+            except ValueError:
+                print("Error: Date is not in the correctr format mm/dd/yyyy")
+                return False
+            
             email_prompt = input("Enter custodian email.\n")
 
             new_device = [
@@ -102,9 +117,11 @@ class Cal_Database:
             self.property_numbers.append(pn_prompt)
 
             print("Device added!")
+            return True
 
         except Error:
             print("Error: property number already exists.")
+            return False
 
     def add_from_file(self):
         """Add devices from a csv file"""
@@ -117,9 +134,11 @@ class Cal_Database:
             self.generate_device_list()
 
             print("Devices added!")
+            return True
 
         except Error:
             print("Error: file contains duplicate property number in a unique column.")
+            return False
 
     def add(self):
         """Add devices via user input or external csv file"""
@@ -134,6 +153,7 @@ class Cal_Database:
 
         else:
             print("Error: Invalid entry.")
+            return False
 
     def delete_device(self):
         """Given a property number, deletes a device from the database"""
@@ -151,18 +171,29 @@ class Cal_Database:
 
             print("Device deleted!")
 
+            return True
+
         else:
             print("Error: Property number not found.")
+            return False
 
     def update_device(self):
-        """Updates a device information from the database table"""
+        """Updates or edits device information from the database table"""
 
         pn = input("Enter the property number of the device you wish to update. \n")
 
         if pn in self.property_numbers:
-            col = input("Enter the column you would like to update. \n")
+            col = input("Enter the column you would like to update. \n").lower()
 
             value = input("Enter the new value. \n")
+
+            if col == "cal_date" or col == "cal_due":
+                try:
+                    value_check = datetime.strptime(value, "%m/%d/%Y").date()
+
+                except ValueError:
+                    print("Error: Date not in the correct format (mm/dd/yyyy).")
+                    return False
 
             self.cur.execute(
                 "UPDATE devices SET "
@@ -180,11 +211,14 @@ class Cal_Database:
 
             print("Device updated!")
 
+            return True
+
         else:
             print("Error: Property number not found.")
+            return False
 
     def save_csv(self):
-        """Saves the table content to a csv file"""
+        """Saves the table content to a csv file named calibration_data.csv"""
 
         sqlquery = "SELECT * FROM devices"
         self.cur.execute(sqlquery)
@@ -199,15 +233,20 @@ class Cal_Database:
     def date_math(self, cal_due):
         """Computes the remaining days until calibration expiration"""
 
-        x = date.today().strftime("%m/%d/%Y")
+        try:
+            x = date.today().strftime("%m/%d/%Y")
 
-        x = datetime.strptime(x, "%m/%d/%Y").date()
+            x = datetime.strptime(x, "%m/%d/%Y").date()
 
-        y = datetime.strptime(cal_due, "%m/%d/%Y").date()
+            y = datetime.strptime(cal_due, "%m/%d/%Y").date()
 
-        z = y - x
+            z = y - x
 
-        return z.days
+            return z.days
+        
+        except ValueError:
+            print("Error: Date not in the correct format of mm/dd/yyyy.")
+            return False
 
     def generate_email_list(self):
         """Adds into a list custodian email with expiring devices"""
@@ -226,6 +265,7 @@ class Cal_Database:
 
         except Error:
             print("Error: Calibration due dates must be in the form MM/DD/YYYY")
+            return False
 
     def send_email_gmail(self, email_receiver):
         """Sends email reminders to custodians using gmail"""
@@ -252,9 +292,12 @@ class Cal_Database:
         """Sends an email reminder to custodians with upcoming calibration expiration"""
 
         email_list = self.generate_email_list()
-        for i in email_list:
-            self.send_email_gmail(i)
-        print("Reminders sent!")
+        if email_list != []:
+            for i in email_list:
+                self.send_email_gmail(i)
+            print("Reminders sent!")
+        else:
+            print("No upcoming device calibration required.")
 
     def help(self):
         """Displays the commands and its description"""
