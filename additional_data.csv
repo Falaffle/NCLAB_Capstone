@@ -1,6 +1,2 @@
 property_number,manufacturer,description,cal_date,cal_due,custodian_email
-B000021,Thorlabs,Optical Power Meter,01/02/2023,01/01/2024,john_doe@sample.com
-B000022,Thorlabs,Optical Power Meter,01/02/2023,01/01/2024,john_doe@sample.com
-B000023,Thorlabs,Optical Power Meter,01/02/2023,01/01/2024,john_doe@sample.com
-B000024,Thorlabs,Optical Power Meter,01/02/2023,01/01/2024,john_doe@sample.com
-B000025,Thorlabs,Optical Power Meter,01/02/2023,01/01/2024,john_doe@sample.com
+B000006,Thorlabs,Optical Power Meter,,,firefoxmico@gmail.com

@@ -12,63 +12,67 @@ from dotenv import load_dotenv, dotenv_values
 class Cal_Database:
     """A program that manages a device calibration database."""
 
-    def __init__(self, db_loc="device_database.db"):
+    def __init__(self):
         """Initiates Cal_Database"""
 
-        self.db_loc = db_loc
-
-        self.conn = sqlite3.connect(self.db_loc)
-
+        self.conn = sqlite3.connect("device_database.db")
         self.cur = self.conn.cursor()
-
+        self.devices = []
         self.property_numbers = []
-
         self.emails = []
-
         self.create_cal_table()
-
-        self.generate_device_list()
-
+        self.generate_devices_list()
+        self.generate_property_list()
         load_dotenv()
-
-        #self.remind()
+        # self.remind()
 
     def create_cal_table(self):
         """Creates a new calibration table named devices if table does not exist"""
 
         sqlquery = "CREATE TABLE IF NOT EXISTS devices (property_number TEXT UNIQUE, manufacturer TEXT, description TEXT, cal_date TEXT, cal_due TEXT, custodian_email TEXT)"
-
         self.cur.execute(sqlquery)
-
         self.conn.commit()
 
-    def generate_device_list(self):
+    def generate_devices_list(self):
+        """Populates a complete device data list from the devices table"""
+
+        self.devices.clear()
+        sqlquery = "SELECT * FROM devices ORDER BY property_number"
+        device_data = self.cur.execute(sqlquery)
+        for row in device_data:
+            self.devices.append(row)
+
+        return self.devices
+
+    def generate_property_list(self):
         """Populates a property number list from the devices table"""
 
         self.property_numbers.clear()
-
-        device_data = self.cur.execute("SELECT * FROM devices ORDER BY property_number")
+        sqlquery = "SELECT * FROM devices ORDER BY property_number"
+        device_data = self.cur.execute(sqlquery)
         for row in device_data:
             self.property_numbers.append(row[0])
 
         return self.property_numbers
 
+    def display_column_names(self):
+        """Displays the column names into the terminal"""
+
+        sqlquery = "SELECT * FROM devices"
+        column = self.cur.execute(sqlquery)
+        column_names = tuple(map(lambda x: x[0], column.description))
+        print(column_names)
+        return column_names
+
     def display_data(self):
         """Displays all data from the database table"""
 
-        column = self.conn.execute("SELECT * FROM devices")
-        column_names = tuple(map(lambda x: x[0], column.description))
-        print(column_names)
+        self.display_column_names()
 
-        device_data = self.cur.execute("SELECT * FROM devices ORDER BY property_number")
+        sqlquery = "SELECT * FROM devices ORDER BY property_number"
+        device_data = self.cur.execute(sqlquery)
         for row in device_data:
             print(row)
-
-    def close_conn(self):
-        """Closes connection from the database"""
-
-        self.cur.close()
-        self.conn.close()
 
     def add_device(self):
         """Adds a device to the database"""
@@ -77,23 +81,23 @@ class Cal_Database:
             pn_prompt = input("Enter device property number.\n")
             mn_prompt = input("Enter device manufacturer.\n")
             des_prompt = input("Enter device description.\n")
-            
+
             try:
                 date_prompt = input("Enter calibration date.\n")
                 datetime.strptime(date_prompt, "%m/%d/%Y").date()
 
-            except ValueError:
-                print("Error: Date is not in the correct format mm/dd/yyyy")
-                return False
+            except ValueError or TypeError as e:
+                print("Error: " + str(e))
+                return e
 
             try:
                 due_prompt = input("Enter cal due date.\n")
                 datetime.strptime(due_prompt, "%m/%d/%Y").date()
 
-            except ValueError:
-                print("Error: Date is not in the correctr format mm/dd/yyyy")
-                return False
-            
+            except ValueError or TypeError as e:
+                print("Error: " + str(e))
+                return e
+
             email_prompt = input("Enter custodian email.\n")
 
             new_device = [
@@ -107,38 +111,36 @@ class Cal_Database:
                 )
             ]
 
-            self.cur.executemany(
-                "INSERT INTO devices (property_number, manufacturer, description, cal_date, cal_due, custodian_email) VALUES (?, ?, ?, ?, ?, ?)",
-                new_device,
-            )
-
+            sqlquery = "INSERT INTO devices (property_number, manufacturer, description, cal_date, cal_due, custodian_email) VALUES (?, ?, ?, ?, ?, ?)"
+            self.cur.executemany(sqlquery, new_device)
             self.conn.commit()
 
+            self.devices.append(new_device[0])
             self.property_numbers.append(pn_prompt)
 
             print("Device added!")
-            return True
+            return new_device
 
-        except Error:
-            print("Error: property number already exists.")
-            return False
+        except Error as e:
+            print("Error: " + str(e))
+            return e
 
     def add_from_file(self):
-        """Add devices from a csv file"""
+        """Add devices from a csv file called additional_data.csv"""
 
         try:
-            df = pd.read_csv("calibration_data.csv")
+            df = pd.read_csv("additional_data.csv")
 
             df.to_sql("devices", self.conn, if_exists="append", index=False)
 
-            self.generate_device_list()
+            self.generate_property_list()
 
             print("Devices added!")
             return True
 
-        except Error:
-            print("Error: file contains duplicate property number in a unique column.")
-            return False
+        except Exception as e:
+            print("Error: " + str(e))
+            return e
 
     def add(self):
         """Add devices via user input or external csv file"""
@@ -152,8 +154,25 @@ class Cal_Database:
             self.add_device()
 
         else:
-            print("Error: Invalid entry.")
+            print("Error: Invalid entry")
             return False
+
+    def replace(self):
+        """replaces data in the devices table with data from a csv file called calibration_data.csv"""
+
+        try:
+            df = pd.read_csv("calibration_data.csv")
+
+            df.to_sql("devices", self.conn, if_exists="replace", index=False)
+
+            self.generate_property_list()
+
+            print("Data replaced!")
+            return True
+
+        except Exception as e:
+            print("Error: " + str(e))
+            return e
 
     def delete_device(self):
         """Given a property number, deletes a device from the database"""
@@ -161,21 +180,17 @@ class Cal_Database:
         pn = input("Enter the property number of the device you wish to delete. \n")
 
         if pn in self.property_numbers:
-            sql_string = "DELETE FROM devices WHERE property_number = '" + pn + "'"
-
-            self.cur.execute(sql_string)
-
+            sqlquery = "DELETE FROM devices WHERE property_number = '" + pn + "'"
+            self.cur.execute(sqlquery)
             self.conn.commit()
-
+            self.generate_devices_list()
             self.property_numbers.remove(pn)
-
             print("Device deleted!")
 
-            return True
-
         else:
-            print("Error: Property number not found.")
-            return False
+            e = "Error: Property number not found."
+            print(e)
+            return e
 
     def update_device(self):
         """Updates or edits device information from the database table"""
@@ -183,39 +198,36 @@ class Cal_Database:
         pn = input("Enter the property number of the device you wish to update. \n")
 
         if pn in self.property_numbers:
-            col = input("Enter the column you would like to update. \n").lower()
+            try:
+                col = input("Enter the column you would like to update. \n").lower()
 
-            value = input("Enter the new value. \n")
+                value = input("Enter the new value. \n")
 
-            if col == "cal_date" or col == "cal_due":
-                try:
-                    value_check = datetime.strptime(value, "%m/%d/%Y").date()
+                if col == "cal_date" or col == "cal_due":
+                    try:
+                        value_check = datetime.strptime(value, "%m/%d/%Y").date()
 
-                except ValueError:
-                    print("Error: Date not in the correct format (mm/dd/yyyy).")
-                    return False
+                    except ValueError or TypeError as e:
+                        print("Error: " + str(e))
+                        return e
 
-            self.cur.execute(
-                "UPDATE devices SET "
-                + col
-                + " = '"
-                + value
-                + "' WHERE property_number = '"
-                + pn
-                + "'"
-            )
+                sqlquery = "UPDATE devices SET " + col + " = '" + value + "' WHERE property_number = '" + pn + "'"
+                self.cur.execute(sqlquery)
+                self.conn.commit()
 
-            self.conn.commit()
+                self.generate_property_list()
+                print("Device updated!")
 
-            self.generate_device_list()
-
-            print("Device updated!")
-
-            return True
+                return True
+            
+            except Error as e:
+                print("Error: " + str(e))
+                return e
 
         else:
-            print("Error: Property number not found.")
-            return False
+            e = "Error: Property number not found."
+            print(e)
+            return e
 
     def save_csv(self):
         """Saves the table content to a csv file named calibration_data.csv"""
@@ -235,26 +247,22 @@ class Cal_Database:
 
         try:
             x = date.today().strftime("%m/%d/%Y")
-
             x = datetime.strptime(x, "%m/%d/%Y").date()
-
             y = datetime.strptime(cal_due, "%m/%d/%Y").date()
-
             z = y - x
 
             return z.days
-        
-        except ValueError:
-            print("Error: Date not in the correct format of mm/dd/yyyy.")
-            return False
+
+        except ValueError and TypeError as e:
+            # "Error: Date not in the correct format (mm/dd/yyyy)"
+            return e
 
     def generate_email_list(self):
         """Adds into a list custodian email with expiring devices"""
 
         try:
-            device_data = self.cur.execute(
-                "SELECT * FROM devices ORDER BY property_number"
-            )
+            sqlquery = "SELECT * FROM devices ORDER BY property_number"
+            device_data = self.cur.execute(sqlquery)
             for row in device_data:
                 days = self.date_math(row[4])
 
@@ -263,9 +271,9 @@ class Cal_Database:
 
             return self.emails
 
-        except Error:
-            print("Error: Calibration due dates must be in the form MM/DD/YYYY")
-            return False
+        except ValueError and TypeError as e:
+            # "Error: Date not in the correct format (mm/dd/yyyy)"
+            return e
 
     def send_email_gmail(self, email_receiver):
         """Sends email reminders to custodians using gmail"""
@@ -291,13 +299,18 @@ class Cal_Database:
     def remind(self):
         """Sends an email reminder to custodians with upcoming calibration expiration"""
 
-        email_list = self.generate_email_list()
-        if email_list != []:
-            for i in email_list:
-                self.send_email_gmail(i)
-            print("Reminders sent!")
-        else:
-            print("No upcoming device calibration required.")
+        try:
+            email_list = self.generate_email_list()
+            if email_list != []:
+                for i in email_list:
+                    self.send_email_gmail(i)
+                print("Reminders sent!")
+            else:
+                print("No upcoming device calibration required.")
+
+        except ValueError and TypeError as e:
+            print("Error: Date not in the correct format (mm/dd/yyyy)")
+            return e
 
     def help(self):
         """Displays the commands and its description"""
@@ -307,7 +320,7 @@ class Cal_Database:
         print("DELETE - " + self.delete_device.__doc__ + "\n")
         print("DISPLAY - " + self.display_data.__doc__ + "\n")
         print("HELP - " + self.help.__doc__ + "\n")
-        print("QUIT - " + self.close_conn.__doc__ + " and exits the program\n")
+        print("QUIT - Closes connection from the database and exits the program\n")
         print("REMIND - " + self.remind.__doc__ + "\n")
         print("SAVE - " + self.save_csv.__doc__ + "\n")
         print("UPDATE - " + self.update_device.__doc__ + "\n")
@@ -321,7 +334,8 @@ class Cal_Database:
             command = input("Please enter a command\n").lower()
 
             if command == "quit":
-                self.close_conn()
+                self.cur.close()
+                self.conn.close()
                 finished = True
 
             elif command == "add":
@@ -339,6 +353,9 @@ class Cal_Database:
             elif command == "remind":
                 self.remind()
 
+            elif command == "replace":
+                self.replace()
+
             elif command == "save":
                 self.save_csv()
 
@@ -346,7 +363,9 @@ class Cal_Database:
                 self.help()
 
             elif command == "list":
-                self.generate_device_list
+                self.generate_devices_list
+                print(self.devices)
+                self.generate_property_list
                 print(self.property_numbers)
 
             else:
