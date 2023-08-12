@@ -8,8 +8,6 @@ from datetime import datetime, date
 from email.message import EmailMessage
 from dotenv import load_dotenv, dotenv_values
 
-load_dotenv()
-
 
 class Cal_Database:
     """A program that manages a device calibration database."""
@@ -30,6 +28,8 @@ class Cal_Database:
         self.create_cal_table()
 
         self.generate_device_list()
+
+        load_dotenv()
 
         #self.remind()
 
