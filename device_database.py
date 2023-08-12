@@ -61,18 +61,37 @@ class Cal_Database:
         sqlquery = "SELECT * FROM devices"
         column = self.cur.execute(sqlquery)
         column_names = tuple(map(lambda x: x[0], column.description))
-        print(column_names)
         return column_names
 
     def display_data(self):
         """Displays all data from the database table"""
 
-        self.display_column_names()
+        try:
+            column_prompt = input("Enter column you want to sort by. \n")
 
-        sqlquery = "SELECT * FROM devices ORDER BY property_number"
-        device_data = self.cur.execute(sqlquery)
-        for row in device_data:
-            print(row)
+            print(self.display_column_names())
+
+            sqlquery = "SELECT * FROM devices ORDER BY " + column_prompt
+            device_data = self.cur.execute(sqlquery)
+            for row in device_data:
+                print(row)
+
+        except Error as e:
+            print("Error: " + str(e))
+            return e
+
+    def select(self):
+        """Displays data using advanced SQL commands. Most useful for advanced SELECT searches. Refer to sqlite3 documentation for proper syntax."""
+
+        try:
+            sqlquery = input("Enter sql query\n")
+            data = self.cur.execute(sqlquery)
+            for row in data:
+                print(row)
+            self.conn.commit()
+        except Error as e:
+            print("Error: " + str(e))
+            return e
 
     def add_device(self):
         """Adds a device to the database"""
@@ -200,7 +219,6 @@ class Cal_Database:
         if pn in self.property_numbers:
             try:
                 col = input("Enter the column you would like to update. \n").lower()
-
                 value = input("Enter the new value. \n")
 
                 if col == "cal_date" or col == "cal_due":
@@ -323,6 +341,7 @@ class Cal_Database:
         print("QUIT - Closes connection from the database and exits the program\n")
         print("REMIND - " + self.remind.__doc__ + "\n")
         print("SAVE - " + self.save_csv.__doc__ + "\n")
+        print("SELECT = " + self.select.__doc__ + "\n")
         print("UPDATE - " + self.update_device.__doc__ + "\n")
 
     def start(self):
@@ -367,6 +386,9 @@ class Cal_Database:
                 print(self.devices)
                 self.generate_property_list
                 print(self.property_numbers)
+
+            elif command == "select":
+                self.select()
 
             else:
                 print("Error: Invalid command! Try again or type HELP.")
