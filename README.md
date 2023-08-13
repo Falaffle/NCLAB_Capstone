@@ -64,6 +64,14 @@ After Initialization, the user will be prompted to enter a command.
 Please enter a command.
 ```
 
+The commands can be accessed by entering `HELP`. If an invalid command was entered, an error message will be displayed.
+
+```bash
+Please enter a command.
+invalid
+Error: Invalid command! Try again or type HELP.
+```
+
 ### Commands
 
 The list of commands recognized by the software are the following:
