@@ -10,9 +10,10 @@ Contents
  * [Overview](#Overview)
  * [Software Startup](#Startup)
  * [Initialization](#Initialization)
- * [Table Columns](#Table Columns)
- * [Event Loop](#Event Loop)
- * [Event Commands] (#Commands)
+ * [Columns](#Table)
+ * [Event Loop](#Event)
+ * [Commands](#Commands)
+ * [Summary](#Summary)
 
 ### Overview
 
@@ -44,7 +45,7 @@ During initialization, the software will connect to `device_database.db` or crea
 Like the database file, the software will also create a table in the database named `devices` if it does not exist.
 Lastly, the software will check for upcoming expiration and send a reminder if it's less than or equal to 60 days.
 
-### Table Columns
+### Columns
 
 The table created by the software will have six fixed column names. These are:
 
@@ -63,4 +64,15 @@ After Initialization, the user will be prompted to enter a command.
 Please enter a command.
 ```
 
-### Event Commands
+### Commands
+
+The list of commands recognized by the software are the following:
++ `ADD` - 
++ `DELETE` - 
++ `DISPLAY` - 
++ `HELP` - 
++ `QUIT` - 
++ `REMIND` - 
++ `SAVE` - 
++ `SELECT` - 
++ `UPDATE` - 
