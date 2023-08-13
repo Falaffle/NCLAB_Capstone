@@ -125,3 +125,16 @@ Error: Property number not found.
 `DISPLAY`
 
 The `DISPLAY` command prompts the user on which column the command will sort by. It will then display all data. For more specific searches, the `SELECT` command would be more suitable.
+
+```bash
+Please enter a command
+display
+Enter column you want to sort by. 
+cal_due
+('property_number', 'manufacturer', 'description', 'cal_date', 'cal_due', 'custodian_email')
+('B000001', 'Highland Technologies', 'T680 Time Interval Counter', '01/02/2023', '01/01/2024', 'john_doe1337@gmail.com')
+('B000005', 'Thorlabs', 'Optical Power Meter', '01/02/2023', '01/01/2024', 'john_doe1337@gmail.com')
+('B000002', 'National Instruments', 'PXIe 5160 Oscilloscope', '03/02/2023', '03/02/2024', 'john_doe1337@gmail.com')
+('B000004', 'Newport', 'Optical Detector', '07/01/2022', '07/01/2023', 'john_doe1337@gmail.com')
+('B000003', 'Fluke', 'Digital Multi-meter', '08/03/2022', '08/03/2023', 'john_doe1337@gmail.com')
+```
