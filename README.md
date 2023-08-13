@@ -75,12 +75,12 @@ Error: Invalid command! Try again or type HELP.
 ### Commands
 
 The list of commands recognized by the software are the following:
-+ `ADD` - 
-+ `DELETE` - 
-+ `DISPLAY` - 
-+ `HELP` - 
-+ `QUIT` - 
-+ `REMIND` - 
-+ `SAVE` - 
-+ `SELECT` - 
-+ `UPDATE` - 
++ `ADD` - Add devices via user input or external csv file
++ `DELETE` - Given a property number, deletes a device from the database
++ `DISPLAY` - Displays all data from the database table
++ `HELP` - Displays the commands and its description
++ `QUIT` - Closes connection from the database and exits the program
++ `REMIND` - Sends an email reminder to custodians with upcoming calibration expiration
++ `SAVE` - Saves the table content to a csv file named calibration_data.csv
++ `SELECT` - Useful for advanced searches for displays data using advanced SQL commands
++ `UPDATE` - Updates or edits device information from the database table
