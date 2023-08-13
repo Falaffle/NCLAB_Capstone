@@ -29,3 +29,7 @@ With this, we'll be able to be more proactive with sending instruments for calib
 
 To start the software `Cal_Database`, run the terminal then change the directory to the software's location.
 Afterwards, simply run the software through the terminal.
+
+```bash
+$ python device_database.py
+```
