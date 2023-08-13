@@ -340,6 +340,7 @@ class Cal_Database:
         print("HELP - " + self.help.__doc__ + "\n")
         print("QUIT - Closes connection from the database and exits the program\n")
         print("REMIND - " + self.remind.__doc__ + "\n")
+        print("REPLACE - " + self.replace.__doc__ + "\n")
         print("SAVE - " + self.save_csv.__doc__ + "\n")
         print("SELECT = " + self.select.__doc__ + "\n")
         print("UPDATE - " + self.update_device.__doc__ + "\n")

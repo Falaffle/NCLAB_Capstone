@@ -13,7 +13,7 @@ Contents
  * [Columns](#Table)
  * [Event Loop](#Event)
  * [Commands](#Commands)
- * [Summary](#Summary)
+ * [Command Details](#Details)
 
 ### Overview
 
@@ -75,12 +75,33 @@ Error: Invalid command! Try again or type HELP.
 ### Commands
 
 The list of commands recognized by the software are the following:
-+ `ADD` - Add devices via user input or external csv file
++ `ADD` - Add devices via user input or external csv file.
 + `DELETE` - Given a property number, deletes a device from the database
 + `DISPLAY` - Displays all data from the database table
 + `HELP` - Displays the commands and its description
 + `QUIT` - Closes connection from the database and exits the program
 + `REMIND` - Sends an email reminder to custodians with upcoming calibration expiration
++ `REPLACE` - Replaces data in the devices table with data from calibration_data.csv
 + `SAVE` - Saves the table content to a csv file named calibration_data.csv
 + `SELECT` - Useful for advanced searches for displays data using advanced SQL commands
 + `UPDATE` - Updates or edits device information from the database table
+
+### Command Details
+
+`ADD`
+
+The `ADD` command prompts the user to either add devices manually or through an external csv file named additional_data.csv.
+
+```bash
+Please enter a command.
+add
+Add from file? Y/N 
+```
+
+When adding devices manually, make sure of the following:
++ Property number is not a duplicate
++ Ensure proper date format. The software looks for MM/DD/YYYY.
+
+When adding devices through the file, ensure the following:
++ additional_data.csv is in the same file directory as the software
++ Users may create a duplicate copy of calibration_data.csv and rename it as additional_data.csv.
