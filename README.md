@@ -139,16 +139,59 @@ cal_due
 ('B000003', 'Fluke', 'Digital Multi-meter', '08/03/2022', '08/03/2023', 'john_doe1337@gmail.com')
 ```
 
-`HELP`
-
-The `HELP` command simply displays the allowable commands the user can input.
-
-`QUIT`
-
-The `QUIT` command closes the database connection and ends the program.
-
 `REMIND`
 
-The `REMIND` command scans the database table for upcoming calibration expiration. If there are 60 days or lower between today's date and the calibration due date, the software will send an email reminder to the custodian.
+The `REMIND` command scans the database table for upcoming calibration expiration. If the difference between the calibration due date and today's date is 60 days or less, the software will send an email reminder to the custodian.
 
 The current email server used is gmail and for the purposes of this project, the email information is in an `env` file.
+
+`REPLACE`
+
+The `REPLACE` command replaces the contents of the device table with files in calibration_database.csv. This is useful for when the csv file is more up-to-date than the device table.
+
+```bash
+Please enter a command
+replace
+Data replaced!
+```
+
+`SELECT`
+
+The `SELECT` command takes in an SQLite query. This is very useful for more specific and advanced searches. Since this command executes an SQLite query, it can also perform other SQLite functions but the software will not be able to display some of the results such as if one uses a query that deletes a row.
+
+```bash
+Please enter a command
+SELECT
+Enter sql query
+SELECT * FROM devices WHERE custodian_email = 'john_doe1337@gmail.com' 
+('B000001', 'Highland Technologies', 'T680 Time Interval Counter', '01/02/2023', '01/01/2024', 'john_doe1337@gmail.com')
+('B000002', 'National Instruments', 'PXIe 5160 Oscilloscope', '03/02/2023', '03/02/2024', 'john_doe1337@gmail.com')
+('B000003', 'Fluke', 'Digital Multi-meter', '08/03/2022', '08/03/2023', 'john_doe1337@gmail.com')
+('B000004', 'Newport', 'Optical Detector', '07/01/2022', '07/01/2023', 'john_doe1337@gmail.com')
+('B000005', 'Thorlabs', 'Optical Power Meter', '01/02/2023', '01/01/2024', 'john_doe1337@gmail.com')
+```
+
+For more information, refer to the SQLite documentation https://www.sqlite.org/lang.html.
+
+`UPDATE`
+
+The `UPDATE` command prompts the user for a property number they wishes to update, they will then be prompted to enter the column, then finally the value they wish to update. An example is shown below.
+
+```bash
+('B000005', 'Thorlabs', 'Optical Power Meter', '01/02/2023', '01/01/2024', 'john_doe1337@gmail.com')
+Please enter a command
+update
+Enter the property number of the device you wish to update. 
+B000005
+Enter the column you would like to update. 
+custodian_email
+Enter the new value. 
+jane_doe1337@yahoo.com
+Device updated!
+Please enter a command
+display               
+Enter column you want to sort by. 
+custodian_email
+('property_number', 'manufacturer', 'description', 'cal_date', 'cal_due', 'custodian_email')
+('B000005', 'Thorlabs', 'Optical Power Meter', '01/02/2023', '01/01/2024', 'jane_doe1337@yahoo.com')
+```
