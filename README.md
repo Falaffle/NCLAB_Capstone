@@ -105,3 +105,23 @@ When adding devices manually, make sure of the following:
 When adding devices through the file, ensure the following:
 + additional_data.csv is in the same file directory as the software
 + Users may create a duplicate copy of calibration_data.csv and rename it as additional_data.csv.
+
+`DELETE`
+
+The `DELETE` command prompts the user for a device property number then proceeds to delete the entire row from the table.
+
+```bash
+Please enter a command.
+delete
+Enter the property number of the device you wish to delete.
+```
+
+The software will print an error if the property number is not found.
+
+```bash
+Error: Property number not found.
+```
+
+`DISPLAY`
+
+The `DISPLAY` command prompts the user on which column the command will sort by. It will then display all data. For more specific searches, the `SELECT` command would be more suitable.
