@@ -138,3 +138,17 @@ cal_due
 ('B000004', 'Newport', 'Optical Detector', '07/01/2022', '07/01/2023', 'john_doe1337@gmail.com')
 ('B000003', 'Fluke', 'Digital Multi-meter', '08/03/2022', '08/03/2023', 'john_doe1337@gmail.com')
 ```
+
+`HELP`
+
+The `HELP` command simply displays the allowable commands the user can input.
+
+`QUIT`
+
+The `QUIT` command closes the database connection and ends the program.
+
+`REMIND`
+
+The `REMIND` command scans the database table for upcoming calibration expiration. If there are 60 days or lower between today's date and the calibration due date, the software will send an email reminder to the custodian.
+
+The current email server used is gmail and for the purposes of this project, the email information is in an `env` file.
