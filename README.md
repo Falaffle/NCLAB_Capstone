@@ -14,6 +14,7 @@ Contents
  * [Event Loop](#Event)
  * [Commands](#Commands)
  * [Command Details](#Details)
+ * [Special Thanks](#Thanks)
 
 ### Overview
 
@@ -171,7 +172,7 @@ SELECT * FROM devices WHERE custodian_email = 'john_doe1337@gmail.com'
 ('B000005', 'Thorlabs', 'Optical Power Meter', '01/02/2023', '01/01/2024', 'john_doe1337@gmail.com')
 ```
 
-For more information, refer to the SQLite documentation https://www.sqlite.org/lang.html.
+For more syntax information, refer to the SQLite documentation https://www.sqlite.org/lang.html.
 
 `UPDATE`
 
@@ -195,3 +196,7 @@ custodian_email
 ('property_number', 'manufacturer', 'description', 'cal_date', 'cal_due', 'custodian_email')
 ('B000005', 'Thorlabs', 'Optical Power Meter', '01/02/2023', '01/01/2024', 'jane_doe1337@yahoo.com')
 ```
+
+### Special Thanks
+
+I would like to thank my NCLab coach and the NCLab support team for their guidance and assistance during this python developer program. You are all awesome!
