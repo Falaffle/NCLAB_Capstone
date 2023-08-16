@@ -90,6 +90,7 @@ The list of commands recognized by the software are the following:
 ### Command Details
 
 `ADD`
+========
 
 The `ADD` command prompts the user to either add devices manually or through an external csv file named additional_data.csv.
 
@@ -108,6 +109,7 @@ When adding devices through the file, ensure the following:
 + Users may create a duplicate copy of calibration_data.csv and rename it as additional_data.csv.
 
 `DELETE`
+========
 
 The `DELETE` command prompts the user for a device property number then proceeds to delete the entire row from the table.
 
@@ -124,6 +126,7 @@ Error: Property number not found.
 ```
 
 `DISPLAY`
+========
 
 The `DISPLAY` command prompts the user on which column the command will sort by. It will then display all data. For more specific searches, the `SELECT` command would be more suitable.
 
@@ -141,12 +144,14 @@ cal_due
 ```
 
 `REMIND`
+========
 
 The `REMIND` command scans the database table for upcoming calibration expiration. If the difference between the calibration due date and today's date is 60 days or less, the software will send an email reminder to the custodian.
 
 The current email server used is gmail and for the purposes of this project, the email information is in an `env` file.
 
 `REPLACE`
+========
 
 The `REPLACE` command replaces the contents of the device table with files in calibration_database.csv. This is useful for when the csv file is more up-to-date than the device table.
 
@@ -157,6 +162,7 @@ Data replaced!
 ```
 
 `SELECT`
+========
 
 The `SELECT` command takes in an SQLite query. This is very useful for more specific and advanced searches. Since this command executes an SQLite query, it can also perform other SQLite functions but the software will not be able to display some of the results such as if one uses a query that deletes a row.
 
@@ -175,6 +181,7 @@ SELECT * FROM devices WHERE custodian_email = 'john_doe1337@gmail.com'
 For more syntax information, refer to the SQLite documentation https://www.sqlite.org/lang.html.
 
 `UPDATE`
+========
 
 The `UPDATE` command prompts the user for a property number they wishes to update, they will then be prompted to enter the column, then finally the value they wish to update. An example is shown below.
 
