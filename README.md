@@ -8,13 +8,13 @@ Contents
 ========
 
  * [Overview](#Overview)
- * [Software Startup](#Startup)
+ * [Software Startup](#SoftwareStartup)
  * [Initialization](#Initialization)
- * [Columns](#Table)
- * [Event Loop](#Event)
+ * [Columns](#Columns)
+ * [Event Loop](#EventLoop)
  * [Commands](#Commands)
- * [Command Details](#Details)
- * [Special Thanks](#Thanks)
+ * [Command Details](#CommandDetails)
+ * [Special Thanks](#SpecialThanks)
 
 ### Overview
 
