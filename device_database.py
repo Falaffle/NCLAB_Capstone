@@ -296,23 +296,30 @@ class Cal_Database:
     def send_email_gmail(self, email_receiver):
         """Sends email reminders to custodians using gmail"""
 
-        email_sender = os.getenv("EMAIL")
-        email_password = os.getenv("PASSWORD")
+        try:   
+            email_sender = os.getenv("EMAIL")
+            email_password = os.getenv("PASSWORD")
 
-        subject = "Calibration Reminder"
-        body = "Greetings,\n\nOne or more of your devices need to be calibrated.\n\nThank you."
+            subject = "Calibration Reminder"
+            body = "Greetings,\n\nOne or more of your devices need to be calibrated.\n\nThank you."
 
-        em = EmailMessage()
-        em["From"] = email_sender
-        em["To"] = email_receiver
-        em["subject"] = subject
-        em.set_content(body)
+            em = EmailMessage()
+            em["From"] = email_sender
+            em["To"] = email_receiver
+            em["subject"] = subject
+            em.set_content(body)
 
-        context = ssl.create_default_context()
+            context = ssl.create_default_context()
 
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as smtp:
-            smtp.login(email_sender, email_password)
-            smtp.sendmail(email_sender, email_receiver, em.as_string())
+            with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as smtp:
+                smtp.login(email_sender, email_password)
+                smtp.sendmail(email_sender, email_receiver, em.as_string())
+
+            print("Reminders sent!")
+
+        except Exception as e:
+            print("Error: " + str(e) + " check .env file.")
+            return e
 
     def remind(self):
         """Sends an email reminder to custodians with upcoming calibration expiration"""
@@ -322,7 +329,6 @@ class Cal_Database:
             if email_list != []:
                 for i in email_list:
                     self.send_email_gmail(i)
-                print("Reminders sent!")
             else:
                 print("No upcoming device calibration required.")
 
