@@ -55,6 +55,56 @@ class Cal_Database:
 
         return self.property_numbers
 
+    def pn_prompt(self):
+        """Prompts users for a property number"""
+
+        finished = False
+        while finished == False:
+            prompt = input("Enter device property number.\n").strip()
+            if prompt in self.property_numbers:
+                finished = True
+            else:
+                print("Error: Property number does not exist")
+        return prompt
+    
+    def pn_prompt_add(self):
+        """Prompts users for a property number for the add command"""
+
+        finished = False
+        while finished == False:
+            prompt = input("Enter device property number.\n").strip()
+            if prompt in self.property_numbers:
+                print("Error: Property number already exists")
+            else:
+                finished = True
+        return prompt
+
+    def date_prompt(self):
+        """Prompts user for a calibration date"""
+
+        finished = False
+        while finished == False:
+            try:
+                prompt = input("Enter calibration date.\n").strip()
+                datetime.strptime(prompt, "%m/%d/%Y").date()
+                finished = True
+            except ValueError or TypeError as e:
+                print("Error: " + str(e))
+        return prompt
+
+    def due_prompt(self):
+        """Prompts user for a calibration due date"""
+
+        finished = False
+        while finished == False:
+            try:
+                prompt = input("Enter calibration due date.\n").strip()
+                datetime.strptime(prompt, "%m/%d/%Y").date()
+                finished = True
+            except ValueError or TypeError as e:
+                print("Error: " + str(e))
+        return prompt
+
     def display_column_names(self):
         """Displays the column names into the terminal"""
 
@@ -97,26 +147,11 @@ class Cal_Database:
         """Adds a device to the database"""
 
         try:
-            pn_prompt = input("Enter device property number.\n").strip()
+            pn_prompt = self.pn_prompt_add()
             mn_prompt = input("Enter device manufacturer.\n").strip()
             des_prompt = input("Enter device description.\n").strip()
-
-            try:
-                date_prompt = input("Enter calibration date.\n").strip()
-                datetime.strptime(date_prompt, "%m/%d/%Y").date()
-
-            except ValueError or TypeError as e:
-                print("Error: " + str(e))
-                return e
-
-            try:
-                due_prompt = input("Enter cal due date.\n").strip()
-                datetime.strptime(due_prompt, "%m/%d/%Y").date()
-
-            except ValueError or TypeError as e:
-                print("Error: " + str(e))
-                return e
-
+            date_prompt = self.date_prompt()
+            due_prompt = self.due_prompt()
             email_prompt = input("Enter custodian email.\n").strip()
 
             new_device = [
@@ -219,15 +254,13 @@ class Cal_Database:
         if pn in self.property_numbers:
             try:
                 col = input("Enter the column you would like to update. \n").lower().strip()
-                value = input("Enter the new value. \n").strip()
-
-                if col == "cal_date" or col == "cal_due":
-                    try:
-                        value_check = datetime.strptime(value, "%m/%d/%Y").date()
-
-                    except ValueError or TypeError as e:
-                        print("Error: " + str(e))
-                        return e
+                
+                if col == "cal_date":
+                    value = self.date_prompt()
+                elif col == "cal_due":
+                    value = self.due_prompt()
+                else:
+                    value = input("Enter the new value. \n").strip()
 
                 sqlquery = "UPDATE devices SET " + col + " = '" + value + "' WHERE property_number = '" + pn + "'"
                 self.cur.execute(sqlquery)
