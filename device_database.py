@@ -67,7 +67,7 @@ class Cal_Database:
         """Displays all data from the database table"""
 
         try:
-            column_prompt = input("Enter column you want to sort by. \n")
+            column_prompt = input("Enter column you want to sort by. \n").strip()
 
             print(self.display_column_names())
 
@@ -84,7 +84,7 @@ class Cal_Database:
         """Displays data using advanced SQL commands. Most useful for advanced SELECT searches. Refer to sqlite3 documentation for proper syntax."""
 
         try:
-            sqlquery = input("Enter sql query\n")
+            sqlquery = input("Enter sql query\n").strip()
             data = self.cur.execute(sqlquery)
             for row in data:
                 print(row)
@@ -97,12 +97,12 @@ class Cal_Database:
         """Adds a device to the database"""
 
         try:
-            pn_prompt = input("Enter device property number.\n")
-            mn_prompt = input("Enter device manufacturer.\n")
-            des_prompt = input("Enter device description.\n")
+            pn_prompt = input("Enter device property number.\n").strip()
+            mn_prompt = input("Enter device manufacturer.\n").strip()
+            des_prompt = input("Enter device description.\n").strip()
 
             try:
-                date_prompt = input("Enter calibration date.\n")
+                date_prompt = input("Enter calibration date.\n").strip()
                 datetime.strptime(date_prompt, "%m/%d/%Y").date()
 
             except ValueError or TypeError as e:
@@ -110,14 +110,14 @@ class Cal_Database:
                 return e
 
             try:
-                due_prompt = input("Enter cal due date.\n")
+                due_prompt = input("Enter cal due date.\n").strip()
                 datetime.strptime(due_prompt, "%m/%d/%Y").date()
 
             except ValueError or TypeError as e:
                 print("Error: " + str(e))
                 return e
 
-            email_prompt = input("Enter custodian email.\n")
+            email_prompt = input("Enter custodian email.\n").strip()
 
             new_device = [
                 (
@@ -164,7 +164,7 @@ class Cal_Database:
     def add(self):
         """Add devices via user input or external csv file"""
 
-        prompt = input("Add from file? Y/N \n").lower()
+        prompt = input("Add from file? Y/N \n").lower().strip()
 
         if prompt == "y":
             self.add_from_file()
@@ -196,7 +196,7 @@ class Cal_Database:
     def delete_device(self):
         """Given a property number, deletes a device from the database"""
 
-        pn = input("Enter the property number of the device you wish to delete. \n")
+        pn = input("Enter the property number of the device you wish to delete. \n").strip()
 
         if pn in self.property_numbers:
             sqlquery = "DELETE FROM devices WHERE property_number = '" + pn + "'"
@@ -214,12 +214,12 @@ class Cal_Database:
     def update_device(self):
         """Updates or edits device information from the database table"""
 
-        pn = input("Enter the property number of the device you wish to update. \n")
+        pn = input("Enter the property number of the device you wish to update. \n").strip()
 
         if pn in self.property_numbers:
             try:
-                col = input("Enter the column you would like to update. \n").lower()
-                value = input("Enter the new value. \n")
+                col = input("Enter the column you would like to update. \n").lower().strip()
+                value = input("Enter the new value. \n").strip()
 
                 if col == "cal_date" or col == "cal_due":
                     try:
@@ -351,7 +351,7 @@ class Cal_Database:
         # Event loop:
         finished = False
         while not finished:
-            command = input("Please enter a command\n").lower()
+            command = input("Please enter a command\n").lower().strip()
 
             if command == "quit":
                 self.cur.close()
