@@ -213,12 +213,12 @@ class Cal_Database:
 
         return sqlquery, new_device, message
 
-    def append(self):
+    def append(self, table_name='devices'): #TESTED
         """Add devices from a csv file called additional_data.csv"""
 
         try:
             df = pd.read_csv("additional_data.csv")
-            df.to_sql("devices", self.conn, if_exists="append", index=False)
+            df.to_sql(table_name, self.conn, if_exists="append", index=False)
             message = "Devices added!"
             print(message)
 
@@ -226,12 +226,12 @@ class Cal_Database:
             print("Error: " + str(e))
             return e
 
-    def replace(self):
+    def replace(self, table_name='devices'): #TESTED
         """replaces data in the devices table with data from a csv file called calibration_data.csv"""
 
         try:
             df = pd.read_csv("calibration_data.csv")
-            df.to_sql("devices", self.conn, if_exists="replace", index=False)
+            df.to_sql(table_name, self.conn, if_exists="replace", index=False)
             message = "Data replaced!"
             print(message)
 
@@ -477,5 +477,5 @@ class Cal_Database:
 
 # Main program:
 C = Cal_Database()
-C.crea
+C.create_cal_table('test_devices')
 C.start()

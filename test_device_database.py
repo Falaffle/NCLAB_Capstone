@@ -80,7 +80,7 @@ class TestCal_Database(unittest.TestCase):
                 "b000002",
                 "National Instruments",
                 "PXIe 5160 Oscilloscope",
-                "01/01/2023",
+                "03/02/2023",
                 "03/02/2024",
                 "john_doe1337@gmail.com",
             ),
@@ -106,7 +106,7 @@ class TestCal_Database(unittest.TestCase):
                 "Optical Power Meter",
                 "01/02/2023",
                 "01/01/2024",
-                "jane_doe1337@yahoo.com",
+                "john_doe1337@gmail.com",
             ),
         ]
 
@@ -237,7 +237,7 @@ class TestCal_Database(unittest.TestCase):
         test_result = "CREATE TABLE IF NOT EXISTS test_devices (property_number TEXT UNIQUE, manufacturer TEXT, description TEXT, cal_date TEXT, cal_due TEXT, custodian_email TEXT)"
 
         # Tests method output
-        self.assertEqual(C.create_cal_table(test_devices), test_result)
+        self.assertEqual(C.create_cal_table('test_devices'), test_result)
 
     @patch("builtins.print")
     @patch("builtins.input")
@@ -252,7 +252,7 @@ class TestCal_Database(unittest.TestCase):
                 "Optical Power Meter",
                 "01/02/2023",
                 "01/01/2024",
-                "jane_doe1337@yahoo.com",
+                "john_doe1337@gmail.com",
             )
         )
     
@@ -280,12 +280,20 @@ class TestCal_Database(unittest.TestCase):
     @patch("builtins.print")
     @patch("builtins.input")
     def test_append(self, mocked_input, mocked_print) -> True:
-        C.append()
-        test_result = ('b000006', 'Thorlabs', 'Optical Power Meter', '01/01/2023', '01/01/2024', 'john_doe1337@gmail.com')
-        mocked_input.side_effect = ["SELECT * FROM test_devices WHERE property_number = 'b000006'", 'b000006']
+        C.append('test_devices')
+        mocked_input.side_effect = ["SELECT * FROM test_devices WHERE property_number = 'b000006'"]
         C.select()
-        mocked_print.assert_called_with("huh")
+        mocked_print.assert_called_with(('b000006', 'Thorlabs', 'Optical Power Meter', '01/01/23', '01/01/24', 'john_doe1337@gmail.com'))
         
+    @patch("builtins.print")
+    @patch("builtins.input")
+    def test_replace(self, mocked_input, mocked_print) -> True:
+        C.create_cal_table('test_replace_devices')
+        C.replace('test_replace_devices')
+        mocked_input.side_effect = ["SELECT * FROM test_replace_devices WHERE property_number = 'b000005'"]
+        C.select()
+        mocked_print.assert_called_with(('b000005', 'Thorlabs', 'Optical Power Meter', '01/02/2023', '01/01/2024', 'john_doe1337@gmail.com'))
+
 
 # Main Program
 if __name__ == "__main__":
