@@ -57,7 +57,7 @@ The table created by the software will have six fixed column names. These are:
 + `cal_due` - The column for the date the calibration will expire.
 + `custodian email` - The column for the custodian's email address.
 
-When prompted for a column names, shortcuts may be used. These are `pn`, `mn`, `des`, `date`, `due`, and `email`.
+When prompted for a column name, a shortcut may be used. These are `pn`, `mn`, `des`, `date`, `due`, and `email`.
 
 ### Event Loop
 
