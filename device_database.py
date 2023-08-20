@@ -26,24 +26,24 @@ class Cal_Database:
         load_dotenv()
         # self.remind()
 
-    def sql_execute(self, sqlquery, message): #TESTED
+    def sql_execute(self, sqlquery='', message=''): #TESTED
         """Accepts SQLite string command then executes"""
 
         try:
             print(message)
             return self.cur.execute(sqlquery)
 
-        except Error as e:
+        except Exception and Error as e:
             print("Error: " + str(e))
 
-    def sql_executemany(self, sqlquery, device_list, message): #TESTED
+    def sql_executemany(self, sqlquery='', device_list=[], message=''): #TESTED
         """Accepts SQLite parameters (sql string and list of tuples) then uses executemany"""
 
         try:
             print(message)
             return self.cur.executemany(sqlquery, device_list)
 
-        except Error as e:
+        except Exception and Error as e:
             print("Error: " + str(e))
 
     def create_cal_table(self):
@@ -128,22 +128,26 @@ class Cal_Database:
     def column_prompt(self): #TESTED
         """Prompts user for the table column"""
 
-        column_list = [
-            "property_number",
-            "manufacturer",
-            "description",
-            "cal_date",
-            "cal_due",
-            "custodian_email",
-        ]
+        column_dict = {
+            "pn": "property_number",
+            "mn": "manufacturer",
+            "des": "description",
+            "date": "cal_date",
+            "due": "cal_due",
+            "email": "custodian_email",
+        }
 
         finished = False
         while finished == False:
             prompt = input("Enter column name.\n").lower().strip()
-            if prompt in column_list:
+            if prompt in column_dict.values():
+                finished = True
+            elif prompt in column_dict.keys():
+                prompt = column_dict[prompt]
                 finished = True
             else:
                 print("Error: Column name does not exist")
+        print(prompt)
         return prompt
 
     def display_column_names(self): #TESTED
@@ -282,7 +286,6 @@ class Cal_Database:
                         + pn
                         + "'"
                     )
-                    message = "Device updated!"
                     finished = True
 
                 except Error as e:
@@ -292,6 +295,7 @@ class Cal_Database:
                 e = "Error: Property number not found."
                 print(e)
 
+        message = "Device updated!"
         return sqlquery, message
 
     def save_csv(self):
@@ -435,8 +439,8 @@ class Cal_Database:
                 self.generate_property_list()
 
             elif command == "update":
-                sqlquery = self.update_device()
-                self.sql_execute(sqlquery)
+                sqlquery, message = self.update_device()
+                self.sql_execute(sqlquery, message)
                 self.conn.commit()
                 self.generate_devices_list()
                 self.generate_property_list()

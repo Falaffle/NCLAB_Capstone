@@ -15,12 +15,12 @@ class TestCal_Database(unittest.TestCase):
 
     def test_sql_execute(self) -> True:
         # Initialize test parameters
-        sqlquery = "SELECT * FROM devices WHERE property_number = 'B000001'"
+        sqlquery = "SELECT * FROM devices WHERE property_number = 'b000001'"
         message = "Showing devices..."
 
         test_sql_output = [
             (
-                "B000001",
+                "b000001",
                 "Durgod",
                 "Keyboard",
                 "08/02/2023",
@@ -42,7 +42,7 @@ class TestCal_Database(unittest.TestCase):
         sqlquery1 = "INSERT INTO devices (property_number, manufacturer, description, cal_date, cal_due, custodian_email) VALUES (?, ?, ?, ?, ?, ?)"
         test_devices = [
             (
-                "B000007",
+                "b000007",
                 "Filco",
                 "Keyboard",
                 "08/18/2023",
@@ -53,7 +53,7 @@ class TestCal_Database(unittest.TestCase):
         message1 = "Adding devices..."
         data = C.sql_executemany(sqlquery1, test_devices, message1)
 
-        sqlquery2 = "SELECT * FROM devices WHERE property_number = 'B000007'"
+        sqlquery2 = "SELECT * FROM devices WHERE property_number = 'b000007'"
         message2 = "Showing devices..."
 
         actual_sql_output = []
@@ -69,7 +69,7 @@ class TestCal_Database(unittest.TestCase):
         # Initialize comparison property numbers
         test_devices_list_true = [
             (
-                "B000001",
+                "b000001",
                 "Durgod",
                 "Keyboard",
                 "08/02/2023",
@@ -77,7 +77,7 @@ class TestCal_Database(unittest.TestCase):
                 "jane_doe@gmail.com",
             ),
             (
-                "B000002",
+                "b000002",
                 "National Instruments",
                 "PXIe 5160 Oscilloscope",
                 "01/01/2023",
@@ -85,7 +85,7 @@ class TestCal_Database(unittest.TestCase):
                 "john_doe1337@gmail.com",
             ),
             (
-                "B000003",
+                "b000003",
                 "Fluke",
                 "Digital Multi-meter",
                 "08/03/2022",
@@ -93,7 +93,7 @@ class TestCal_Database(unittest.TestCase):
                 "john_doe1337@gmail.com",
             ),
             (
-                "B000004",
+                "b000004",
                 "Newport",
                 "Optical Detector",
                 "07/01/2022",
@@ -101,7 +101,7 @@ class TestCal_Database(unittest.TestCase):
                 "john_doe1337@gmail.com",
             ),
             (
-                "B000005",
+                "b000005",
                 "Thorlabs",
                 "Optical Power Meter",
                 "01/02/2023",
@@ -116,11 +116,11 @@ class TestCal_Database(unittest.TestCase):
     def test_generate_property_list(self) -> True:
         # Initialize comparison property numbers
         test_property_numbers_true = [
-            "B000001",
-            "B000002",
-            "B000003",
-            "B000004",
-            "B000005",
+            "b000001",
+            "b000002",
+            "b000003",
+            "b000004",
+            "b000005",
         ]
 
         # Tests method output to test list
@@ -150,19 +150,19 @@ class TestCal_Database(unittest.TestCase):
     @patch("builtins.input")
     def test_pn_prompt(self, mocked_input) -> True:
         # Initialize comparison results
-        test_pn_prompt = "B000001"
+        test_pn_prompt = "b000001"
 
         # Tests method output to test prompt
-        mocked_input.return_value = "B000001"
+        mocked_input.return_value = "b000001"
         self.assertEqual(C.pn_prompt(), test_pn_prompt)
 
     @patch("builtins.input")
     def test_pn_prompt_add(self, mocked_input) -> True:
         # Initialize comparison results
-        test_pn_prompt = "B000099"
+        test_pn_prompt = "b000099"
 
         # Tests method output to test prompt
-        mocked_input.return_value = "B000099"
+        mocked_input.return_value = "b000099"
         self.assertEqual(C.pn_prompt_add(), test_pn_prompt)
 
     @patch("builtins.input")
@@ -186,11 +186,12 @@ class TestCal_Database(unittest.TestCase):
     @patch("builtins.input")
     def test_column_prompt(self, mocked_input) -> True:
         # Initialize comparison results
-        test_column_prompt = "property_number"
+        test_column_prompt = ["property_number", "manufacturer", "description", "cal_date", "cal_due", "custodian_email"]
 
         # Tests method output to test prompt
-        mocked_input.return_value = "property_number"
-        self.assertEqual(C.column_prompt(), test_column_prompt)
+        for i in range(len(test_column_prompt)):
+            mocked_input.return_value = test_column_prompt[i]
+            self.assertEqual(C.column_prompt(), test_column_prompt[i])
 
     @patch("builtins.input")
     def test_add_device(self, mock_pn_prompt):
@@ -199,7 +200,7 @@ class TestCal_Database(unittest.TestCase):
             "INSERT INTO devices (property_number, manufacturer, description, cal_date, cal_due, custodian_email) VALUES (?, ?, ?, ?, ?, ?)",
             [
                 (
-                    "B000010",
+                    "b000010",
                     "Logi",
                     "Speakers",
                     "01/01/2023",
@@ -212,7 +213,7 @@ class TestCal_Database(unittest.TestCase):
 
         # Tests method output to test add device
         mock_pn_prompt.side_effect = [
-            "B000010",
+            "b000010",
             "Logi",
             "Speakers",
             "01/01/2023",
