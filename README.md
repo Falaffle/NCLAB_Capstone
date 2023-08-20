@@ -76,7 +76,8 @@ Error: Invalid command! Try again or type HELP.
 ### Commands
 
 The list of commands recognized by the software are the following:
-+ `ADD` - Add devices via user input or external csv file.
++ `ADD` - Add devices manually via user input.
++ `APPEND` - Add devices via an external csv file.
 + `DELETE` - Given a property number, deletes a device from the database
 + `DISPLAY` - Displays all data from the database table
 + `HELP` - Displays the commands and its description
