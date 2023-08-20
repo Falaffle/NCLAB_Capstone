@@ -192,14 +192,37 @@ class TestCal_Database(unittest.TestCase):
         mocked_input.return_value = "property_number"
         self.assertEqual(C.column_prompt(), test_column_prompt)
 
-    """@patch('device_database.Cal_Database.pn_prompt_add')
+    @patch("builtins.input")
     def test_add_device(self, mock_pn_prompt):
-        # Initialize comparison results
-        test_new_device = [('B000010', 'Logi', 'Speakers','01/01/2023','01/01/2024','john_doe1337@gmail.com')]
+        # Initialize comparison list
+        test_list = [
+            "INSERT INTO devices (property_number, manufacturer, description, cal_date, cal_due, custodian_email) VALUES (?, ?, ?, ?, ?, ?)",
+            [
+                (
+                    "B000010",
+                    "Logi",
+                    "Speakers",
+                    "01/01/2023",
+                    "01/01/2024",
+                    "john_doe1337@gmail.com",
+                )
+            ],
+            "Device added!",
+        ]
 
         # Tests method output to test add device
-        mock_pn_prompt.return_value = 'B000010'
-        self.assertEqual(C.add_device(), test_new_device)"""
+        mock_pn_prompt.side_effect = [
+            "B000010",
+            "Logi",
+            "Speakers",
+            "01/01/2023",
+            "01/01/2024",
+            "john_doe1337@gmail.com",
+        ]
+
+        actual_sqlquery, actual_device, actual_message = C.add_device()
+        actual_list = [actual_sqlquery, actual_device, actual_message]
+        self.assertEqual(actual_list, test_list)
 
 
 # Main Program

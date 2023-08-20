@@ -27,7 +27,7 @@ class Cal_Database:
         # self.remind()
 
     def sql_execute(self, sqlquery, message): #TESTED
-        """Accepts SQL string command then executes"""
+        """Accepts SQLite string command then executes"""
 
         try:
             print(message)
@@ -37,7 +37,7 @@ class Cal_Database:
             print("Error: " + str(e))
 
     def sql_executemany(self, sqlquery, device_list, message): #TESTED
-        """Accepts SQL parameters (sql string and list of tuples) then uses executemany"""
+        """Accepts SQLite parameters (sql string and list of tuples) then uses executemany"""
 
         try:
             print(message)
@@ -146,7 +146,7 @@ class Cal_Database:
                 print("Error: Column name does not exist")
         return prompt
 
-    def display_column_names(self):
+    def display_column_names(self): #TESTED
         """Displays the column names into the terminal"""
 
         sqlquery = "SELECT * FROM devices"
@@ -182,7 +182,7 @@ class Cal_Database:
             print("Error: " + str(e))
             return e
 
-    def add_device(self):
+    def add_device(self): #TESTED
         """Adds a device to the database"""
 
         pn_prompt = self.pn_prompt_add()
@@ -258,9 +258,8 @@ class Cal_Database:
         """Updates or edits device information from the database table"""
 
         finished = False
-        i = 0
 
-        while not finished and i < 3:
+        while not finished:
             pn = self.pn_prompt()
 
             if pn in self.property_numbers:
@@ -283,23 +282,17 @@ class Cal_Database:
                         + pn
                         + "'"
                     )
-                    print("Device updated!")
+                    message = "Device updated!"
                     finished = True
 
                 except Error as e:
                     print("Error: " + str(e))
-                    i += 1
 
             else:
                 e = "Error: Property number not found."
                 print(e)
-                i += 1
 
-        if finished:
-            return sqlquery
-        elif not finished:
-            print("Max error amount reached")
-            return ""
+        return sqlquery, message
 
     def save_csv(self):
         """Saves the table content to a csv file named calibration_data.csv"""

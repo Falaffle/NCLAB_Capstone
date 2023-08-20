@@ -92,17 +92,34 @@ The list of commands recognized by the software are the following:
 `ADD`
 ========
 
-The `ADD` command prompts the user to either add devices manually or through an external csv file named additional_data.csv.
+The `ADD` command allows the user to add devices manually through multiple user inputs.
 
 ```bash
-Please enter a command.
+Please enter a command
 add
-Add from file? Y/N 
+Enter device property number.
+B000010
+Enter device manufacturer.
+Dell
+Enter device description.
+Monitor
+Enter calibration date.
+01/02/2023
+Enter calibration due date.
+01/02/2024
+Enter custodian email.
+john_doe1337@gmail.com
+Device added!
 ```
 
 When adding devices manually, make sure of the following:
 + Property number is not a duplicate
 + Ensure proper date format. The software looks for MM/DD/YYYY.
+
+`APPEND`
+========
+
+The `APPEND` command adds additional devices through an external csv file named additional data.csv.
 
 When adding devices through the file, ensure the following:
 + additional_data.csv is in the same file directory as the software
