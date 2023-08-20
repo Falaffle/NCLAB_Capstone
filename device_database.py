@@ -46,12 +46,13 @@ class Cal_Database:
         except Exception and Error as e:
             print("Error: " + str(e))
 
-    def create_cal_table(self):
+    def create_cal_table(self, table_name='devices'): #TESTED
         """Creates a new calibration table named devices if table does not exist"""
 
-        sqlquery = "CREATE TABLE IF NOT EXISTS devices (property_number TEXT UNIQUE, manufacturer TEXT, description TEXT, cal_date TEXT, cal_due TEXT, custodian_email TEXT)"
+        sqlquery = "CREATE TABLE IF NOT EXISTS " + table_name + " (property_number TEXT UNIQUE, manufacturer TEXT, description TEXT, cal_date TEXT, cal_due TEXT, custodian_email TEXT)"
         self.cur.execute(sqlquery)
         self.conn.commit()
+        return sqlquery
 
     def generate_devices_list(self): #TESTED
         """Populates a complete device data list from the devices table"""
@@ -158,7 +159,7 @@ class Cal_Database:
         column_names = tuple(map(lambda x: x[0], column.description))
         return column_names
 
-    def display_data(self):
+    def display_data(self): #TESTED
         """Displays all data from the database table"""
 
         try:
@@ -174,7 +175,7 @@ class Cal_Database:
             print("Error: " + str(e))
             return e
 
-    def select(self):
+    def select(self): #TESTED
         """Displays data using advanced SQL commands. Most useful for advanced SELECT searches. Refer to sqlite3 documentation for proper syntax."""
 
         try:
@@ -238,7 +239,7 @@ class Cal_Database:
             print("Error: " + str(e))
             return e
 
-    def delete_device(self):
+    def delete_device(self): #TESTED
         """Given a property number, deletes a device from the database"""
 
         finished = False
@@ -393,6 +394,7 @@ class Cal_Database:
 
         print("LIST OF COMMANDS\n")
         print("ADD - " + self.add.__doc__ + "\n")
+        print("APPEND - " + self.append.__doc__ + "\n")
         print("DELETE - " + self.delete_device.__doc__ + "\n")
         print("DISPLAY - " + self.display_data.__doc__ + "\n")
         print("HELP - " + self.help.__doc__ + "\n")
@@ -475,4 +477,5 @@ class Cal_Database:
 
 # Main program:
 C = Cal_Database()
+C.crea
 C.start()

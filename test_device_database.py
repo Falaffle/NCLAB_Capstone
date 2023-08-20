@@ -186,7 +186,14 @@ class TestCal_Database(unittest.TestCase):
     @patch("builtins.input")
     def test_column_prompt(self, mocked_input) -> True:
         # Initialize comparison results
-        test_column_prompt = ["property_number", "manufacturer", "description", "cal_date", "cal_due", "custodian_email"]
+        test_column_prompt = [
+            "property_number",
+            "manufacturer",
+            "description",
+            "cal_date",
+            "cal_due",
+            "custodian_email",
+        ]
 
         # Tests method output to test prompt
         for i in range(len(test_column_prompt)):
@@ -194,7 +201,7 @@ class TestCal_Database(unittest.TestCase):
             self.assertEqual(C.column_prompt(), test_column_prompt[i])
 
     @patch("builtins.input")
-    def test_add_device(self, mock_pn_prompt):
+    def test_add_device(self, mock_pn_prompt) -> True:
         # Initialize comparison list
         test_list = [
             "INSERT INTO devices (property_number, manufacturer, description, cal_date, cal_due, custodian_email) VALUES (?, ?, ?, ?, ?, ?)",
@@ -225,6 +232,60 @@ class TestCal_Database(unittest.TestCase):
         actual_list = [actual_sqlquery, actual_device, actual_message]
         self.assertEqual(actual_list, test_list)
 
+    def test_create_cal_table(self) -> True:
+        # Initialize comparison result
+        test_result = "CREATE TABLE IF NOT EXISTS test_devices (property_number TEXT UNIQUE, manufacturer TEXT, description TEXT, cal_date TEXT, cal_due TEXT, custodian_email TEXT)"
+
+        # Tests method output
+        self.assertEqual(C.create_cal_table(test_devices), test_result)
+
+    @patch("builtins.print")
+    @patch("builtins.input")
+    def test_display_data(self, mocked_input, mocked_print) -> True:
+        # Actual test
+        mocked_input.side_effect = ["pn"]
+        C.display_data()
+        mocked_print.assert_called_with(
+            (
+                "b000005",
+                "Thorlabs",
+                "Optical Power Meter",
+                "01/02/2023",
+                "01/01/2024",
+                "jane_doe1337@yahoo.com",
+            )
+        )
+    
+    @patch("builtins.print")
+    @patch("builtins.input")
+    def test_select(self, mocked_input, mocked_print) -> True:
+        # Actual test
+        mocked_input.side_effect = ["SELECT * FROM devices WHERE property_number = 'b000001'"]
+        C.select()
+        mocked_print.assert_called_with(('b000001', 'Durgod', 'Keyboard', '08/02/2023', '08/18/2024', 'jane_doe@gmail.com'))
+
+    @patch("builtins.input")
+    def test_delete_device(self, mocked_input) -> True:
+        # Initialize comparison result
+        test_sqlquery = "DELETE FROM devices WHERE property_number = 'b000001'"
+        test_message = "Device deleted!"
+        test_result = [test_sqlquery, test_message]
+        mocked_input.side_effect = ['b000001']
+        
+        # Test method output
+        actual_sqlquery, actual_message = C.delete_device()
+        actual_result = [actual_sqlquery, actual_message]
+        self.assertEqual(actual_result, test_result)
+    
+    @patch("builtins.print")
+    @patch("builtins.input")
+    def test_append(self, mocked_input, mocked_print) -> True:
+        C.append()
+        test_result = ('b000006', 'Thorlabs', 'Optical Power Meter', '01/01/2023', '01/01/2024', 'john_doe1337@gmail.com')
+        mocked_input.side_effect = ["SELECT * FROM test_devices WHERE property_number = 'b000006'", 'b000006']
+        C.select()
+        mocked_print.assert_called_with("huh")
+        
 
 # Main Program
 if __name__ == "__main__":
