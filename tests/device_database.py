@@ -26,26 +26,6 @@ class Cal_Database:
         load_dotenv()
         # self.remind()
 
-    def sql_execute(self, sqlquery, message):
-        """Accepts SQL string command then executes"""
-
-        try:
-            print(message)
-            return self.cur.execute(sqlquery)
-
-        except Error as e:
-            print("Error: " + str(e))
-
-    def sql_executemany(self, sqlquery, device_list, message):
-        """Accepts SQL parameters (sql string and list of tuples) then uses executemany"""
-
-        try:
-            print(message)
-            return self.cur.executemany(sqlquery, device_list)
-
-        except Error as e:
-            print("Error: " + str(e))
-
     def create_cal_table(self):
         """Creates a new calibration table named devices if table does not exist"""
 
@@ -86,7 +66,7 @@ class Cal_Database:
             else:
                 print("Error: Property number does not exist")
         return prompt
-
+    
     def pn_prompt_add(self):
         """Prompts users for a property number for the add command"""
 
@@ -123,27 +103,6 @@ class Cal_Database:
                 finished = True
             except ValueError or TypeError as e:
                 print("Error: " + str(e))
-        return prompt
-
-    def column_prompt(self):
-        """Prompts user for the table column"""
-
-        column_list = [
-            "property_number",
-            "manufacturer",
-            "description",
-            "cal_date",
-            "cal_due",
-            "custodian_email",
-        ]
-
-        finished = False
-        while finished == False:
-            prompt = input("Enter column name.\n").strip()
-            if prompt in column_list:
-                finished = True
-            else:
-                print("Error: Column name does not exist")
         return prompt
 
     def display_column_names(self):
@@ -187,28 +146,38 @@ class Cal_Database:
     def add_device(self):
         """Adds a device to the database"""
 
-        pn_prompt = self.pn_prompt_add()
-        mn_prompt = input("Enter device manufacturer.\n").strip()
-        des_prompt = input("Enter device description.\n").strip()
-        date_prompt = self.date_prompt()
-        due_prompt = self.due_prompt()
-        email_prompt = input("Enter custodian email.\n").strip()
+        try:
+            pn_prompt = self.pn_prompt_add()
+            mn_prompt = input("Enter device manufacturer.\n").strip()
+            des_prompt = input("Enter device description.\n").strip()
+            date_prompt = self.date_prompt()
+            due_prompt = self.due_prompt()
+            email_prompt = input("Enter custodian email.\n").strip()
 
-        new_device = [
-            (
-                pn_prompt,
-                mn_prompt,
-                des_prompt,
-                date_prompt,
-                due_prompt,
-                email_prompt,
-            )
-        ]
+            new_device = [
+                (
+                    pn_prompt,
+                    mn_prompt,
+                    des_prompt,
+                    date_prompt,
+                    due_prompt,
+                    email_prompt,
+                )
+            ]
 
-        sqlquery = "INSERT INTO devices (property_number, manufacturer, description, cal_date, cal_due, custodian_email) VALUES (?, ?, ?, ?, ?, ?)"
-        message = "Device added!"
+            sqlquery = "INSERT INTO devices (property_number, manufacturer, description, cal_date, cal_due, custodian_email) VALUES (?, ?, ?, ?, ?, ?)"
+            self.cur.executemany(sqlquery, new_device)
+            self.conn.commit()
 
-        return sqlquery, new_device, message
+            self.devices.append(new_device[0])
+            self.property_numbers.append(pn_prompt)
+
+            print("Device added!")
+            return new_device
+
+        except Error as e:
+            print("Error: " + str(e))
+            return e
 
     def add_from_file(self):
         """Add devices from a csv file called additional_data.csv"""
@@ -226,6 +195,21 @@ class Cal_Database:
         except Exception as e:
             print("Error: " + str(e))
             return e
+
+    def add(self):
+        """Add devices via user input or external csv file"""
+
+        prompt = input("Add from file? Y/N \n").lower().strip()
+
+        if prompt == "y":
+            self.add_from_file()
+
+        elif prompt == "n":
+            self.add_device()
+
+        else:
+            print("Error: Invalid entry")
+            return False
 
     def replace(self):
         """replaces data in the devices table with data from a csv file called calibration_data.csv"""
@@ -245,73 +229,56 @@ class Cal_Database:
     def delete_device(self):
         """Given a property number, deletes a device from the database"""
 
-        finished = False
+        pn = input("Enter the property number of the device you wish to delete. \n").strip()
 
-        while not finished:
-            pn = input(
-                "Enter the property number of the device you wish to delete. \n"
-            ).strip()
+        if pn in self.property_numbers:
+            sqlquery = "DELETE FROM devices WHERE property_number = '" + pn + "'"
+            self.cur.execute(sqlquery)
+            self.conn.commit()
+            self.generate_devices_list()
+            self.property_numbers.remove(pn)
+            result = "Device deleted!"
+            print(result)
+            return result
 
-            if pn in self.property_numbers:
-                sqlquery = "DELETE FROM devices WHERE property_number = '" + pn + "'"
-                finished = True
-            else:
-                e = "Error: Property number not found."
-                print(e)
-
-        message = "Device deleted!"
-        return sqlquery, message
+        else:
+            e = "Error: Property number not found."
+            print(e)
+            return e
 
     def update_device(self):
         """Updates or edits device information from the database table"""
 
-        finished = False
-        i = 0
+        pn = input("Enter the property number of the device you wish to update. \n").strip()
 
-        while not finished and i < 3:
-            pn = self.pn_prompt()
+        if pn in self.property_numbers:
+            try:
+                col = input("Enter the column you would like to update. \n").lower().strip()
+                
+                if col == "cal_date":
+                    value = self.date_prompt()
+                elif col == "cal_due":
+                    value = self.due_prompt()
+                else:
+                    value = input("Enter the new value. \n").strip()
 
-            if pn in self.property_numbers:
-                try:
-                    col = (
-                        input("Enter the column you would like to update. \n")
-                        .lower()
-                        .strip()
-                    )
+                sqlquery = "UPDATE devices SET " + col + " = '" + value + "' WHERE property_number = '" + pn + "'"
+                self.cur.execute(sqlquery)
+                self.conn.commit()
 
-                    if col == "cal_date":
-                        value = self.date_prompt()
-                    elif col == "cal_due":
-                        value = self.due_prompt()
-                    else:
-                        value = input("Enter the new value. \n").strip()
+                self.generate_property_list()
+                print("Device updated!")
 
-                    sqlquery = (
-                        "UPDATE devices SET "
-                        + col
-                        + " = '"
-                        + value
-                        + "' WHERE property_number = '"
-                        + pn
-                        + "'"
-                    )
-                    print("Device updated!")
-                    finished = True
+                return True
+            
+            except Error as e:
+                print("Error: " + str(e))
+                return e
 
-                except Error as e:
-                    print("Error: " + str(e))
-                    i += 1
-
-            else:
-                e = "Error: Property number not found."
-                print(e)
-                i += 1
-
-        if finished:
-            return sqlquery
-        elif not finished:
-            print("Max error amount reached")
-            return ""
+        else:
+            e = "Error: Property number not found."
+            print(e)
+            return e
 
     def save_csv(self):
         """Saves the table content to a csv file named calibration_data.csv"""
@@ -362,7 +329,7 @@ class Cal_Database:
     def send_email_gmail(self, email_receiver):
         """Sends email reminders to custodians using gmail"""
 
-        try:
+        try:   
             email_sender = os.getenv("EMAIL")
             email_password = os.getenv("PASSWORD")
 
@@ -431,28 +398,16 @@ class Cal_Database:
                 finished = True
 
             elif command == "add":
-                sqlquery, new_device, message = self.add_device()
-                self.sql_executemany(sqlquery, new_device, message)
-                self.conn.commit()
-                self.generate_devices_list()
-                self.generate_property_list()
+                self.add()
 
             elif command == "display":
                 self.display_data()
 
             elif command == "delete":
-                sqlquery, message = self.delete_device()
-                self.sql_execute(sqlquery, message)
-                self.conn.commit()
-                self.generate_devices_list()
-                self.generate_property_list()
+                self.delete_device()
 
             elif command == "update":
-                sqlquery = self.update_device()
-                self.sql_execute(sqlquery)
-                self.conn.commit()
-                self.generate_devices_list()
-                self.generate_property_list()
+                self.update_device()
 
             elif command == "remind":
                 self.remind()
