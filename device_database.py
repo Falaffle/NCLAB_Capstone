@@ -26,7 +26,7 @@ class Cal_Database:
         load_dotenv()
         # self.remind()
 
-    def sql_execute(self, sqlquery, message):
+    def sql_execute(self, sqlquery, message): #TESTED
         """Accepts SQL string command then executes"""
 
         try:
@@ -36,7 +36,7 @@ class Cal_Database:
         except Error as e:
             print("Error: " + str(e))
 
-    def sql_executemany(self, sqlquery, device_list, message):
+    def sql_executemany(self, sqlquery, device_list, message): #TESTED
         """Accepts SQL parameters (sql string and list of tuples) then uses executemany"""
 
         try:
@@ -53,7 +53,7 @@ class Cal_Database:
         self.cur.execute(sqlquery)
         self.conn.commit()
 
-    def generate_devices_list(self):
+    def generate_devices_list(self): #TESTED
         """Populates a complete device data list from the devices table"""
 
         self.devices.clear()
@@ -64,7 +64,7 @@ class Cal_Database:
 
         return self.devices
 
-    def generate_property_list(self):
+    def generate_property_list(self): #TESTED
         """Populates a property number list from the devices table"""
 
         self.property_numbers.clear()
@@ -75,7 +75,7 @@ class Cal_Database:
 
         return self.property_numbers
 
-    def pn_prompt(self):
+    def pn_prompt(self): #TESTED
         """Prompts users for a property number"""
 
         finished = False
@@ -87,7 +87,7 @@ class Cal_Database:
                 print("Error: Property number does not exist")
         return prompt
 
-    def pn_prompt_add(self):
+    def pn_prompt_add(self): #TESTED
         """Prompts users for a property number for the add command"""
 
         finished = False
@@ -99,7 +99,7 @@ class Cal_Database:
                 finished = True
         return prompt
 
-    def date_prompt(self):
+    def date_prompt(self): #TESTED
         """Prompts user for a calibration date"""
 
         finished = False
@@ -112,7 +112,7 @@ class Cal_Database:
                 print("Error: " + str(e))
         return prompt
 
-    def due_prompt(self):
+    def due_prompt(self): #TESTED
         """Prompts user for a calibration due date"""
 
         finished = False
@@ -125,7 +125,7 @@ class Cal_Database:
                 print("Error: " + str(e))
         return prompt
 
-    def column_prompt(self):
+    def column_prompt(self): #TESTED
         """Prompts user for the table column"""
 
         column_list = [
@@ -139,7 +139,7 @@ class Cal_Database:
 
         finished = False
         while finished == False:
-            prompt = input("Enter column name.\n").strip()
+            prompt = input("Enter column name.\n").lower().strip()
             if prompt in column_list:
                 finished = True
             else:
@@ -158,8 +158,7 @@ class Cal_Database:
         """Displays all data from the database table"""
 
         try:
-            column_prompt = input("Enter column you want to sort by. \n").strip()
-
+            column_prompt = self.column_prompt()
             print(self.display_column_names())
 
             sqlquery = "SELECT * FROM devices ORDER BY " + column_prompt
@@ -179,7 +178,6 @@ class Cal_Database:
             data = self.cur.execute(sqlquery)
             for row in data:
                 print(row)
-            self.conn.commit()
         except Error as e:
             print("Error: " + str(e))
             return e
@@ -210,18 +208,14 @@ class Cal_Database:
 
         return sqlquery, new_device, message
 
-    def add_from_file(self):
+    def append(self):
         """Add devices from a csv file called additional_data.csv"""
 
         try:
             df = pd.read_csv("additional_data.csv")
-
             df.to_sql("devices", self.conn, if_exists="append", index=False)
-
-            self.generate_property_list()
-
-            print("Devices added!")
-            return True
+            message = "Devices added!"
+            print(message)
 
         except Exception as e:
             print("Error: " + str(e))
@@ -233,10 +227,8 @@ class Cal_Database:
         try:
             df = pd.read_csv("calibration_data.csv")
             df.to_sql("devices", self.conn, if_exists="replace", index=False)
-            self.generate_property_list()
-            result = "Data replaced!"
-            print(result)
-            return result
+            message = "Data replaced!"
+            print(message)
 
         except Exception as e:
             print("Error: " + str(e))
@@ -273,11 +265,7 @@ class Cal_Database:
 
             if pn in self.property_numbers:
                 try:
-                    col = (
-                        input("Enter the column you would like to update. \n")
-                        .lower()
-                        .strip()
-                    )
+                    col = self.column_prompt()
 
                     if col == "cal_date":
                         value = self.date_prompt()
@@ -324,7 +312,8 @@ class Cal_Database:
             df = pd.read_sql_query(sqlquery, self.conn)
             df.to_csv("calibration_data.csv", index=False)
 
-        print("File saved!")
+        message = "File saved!"
+        print(message)
 
     def date_math(self, cal_due):
         """Computes the remaining days until calibration expiration"""
@@ -341,7 +330,7 @@ class Cal_Database:
             # "Error: Date not in the correct format (mm/dd/yyyy)"
             return e
 
-    def generate_email_list(self):
+    def generate_email_list(self): #TESTED
         """Adds into a list custodian email with expiring devices"""
 
         try:
@@ -437,6 +426,11 @@ class Cal_Database:
                 self.generate_devices_list()
                 self.generate_property_list()
 
+            elif command == "append":
+                self.append()
+                self.generate_devices_list()
+                self.generate_property_list()
+
             elif command == "display":
                 self.display_data()
 
@@ -459,6 +453,8 @@ class Cal_Database:
 
             elif command == "replace":
                 self.replace()
+                self.generate_devices_list()
+                self.generate_property_list()
 
             elif command == "save":
                 self.save_csv()
@@ -474,6 +470,7 @@ class Cal_Database:
 
             elif command == "select":
                 self.select()
+                self.conn.commit()
 
             else:
                 print("Error: Invalid command! Try again or type HELP.")
