@@ -294,6 +294,23 @@ class TestCal_Database(unittest.TestCase):
         C.select()
         mocked_print.assert_called_with(('b000005', 'Thorlabs', 'Optical Power Meter', '01/02/2023', '01/01/2024', 'john_doe1337@gmail.com'))
 
+    @patch("builtins.input")
+    def test_update_device(self, mocked_input) -> True:
+        # Initialize comparison list
+        test_sqlquery = "UPDATE test_replace_devices SET cal_date = '01/01/2023' WHERE property_number = 'b000005'"
+        test_message = "Device updated!"
+        test_list = [test_sqlquery, test_message]
+
+        # Tests method output to test add device
+        mocked_input.side_effect = [
+            "b000005",
+            "cal_date",
+            "01/01/2023",
+        ]
+
+        actual_sqlquery, actual_message = C.update_device('test_replace_devices')
+        actual_list = [actual_sqlquery, actual_message]
+        self.assertEqual(actual_list, test_list)
 
 # Main Program
 if __name__ == "__main__":
