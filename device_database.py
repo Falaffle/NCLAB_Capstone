@@ -313,7 +313,7 @@ class Cal_Database:
         message = "File saved!"
         print(message)
 
-    def date_math(self, cal_due):
+    def date_math(self, cal_due): #TESTED
         """Computes the remaining days until calibration expiration"""
 
         try:
