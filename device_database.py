@@ -299,16 +299,16 @@ class Cal_Database:
         message = "Device updated!"
         return sqlquery, message
 
-    def save_csv(self):
+    def save_csv(self, table_name="devices", file_name="calibration_data.csv"): #TESTED
         """Saves the table content to a csv file named calibration_data.csv"""
 
-        sqlquery = "SELECT * FROM devices"
+        sqlquery = "SELECT * FROM " + table_name
         self.cur.execute(sqlquery)
         result = self.cur.fetchall()
 
         for row in result:
             df = pd.read_sql_query(sqlquery, self.conn)
-            df.to_csv("calibration_data.csv", index=False)
+            df.to_csv(file_name, index=False)
 
         message = "File saved!"
         print(message)

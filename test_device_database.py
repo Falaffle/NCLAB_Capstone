@@ -1,4 +1,7 @@
 import unittest
+import csv
+import datetime
+from freezegun import freeze_time
 from unittest import mock
 from unittest.mock import patch
 from device_database import Cal_Database
@@ -237,7 +240,7 @@ class TestCal_Database(unittest.TestCase):
         test_result = "CREATE TABLE IF NOT EXISTS test_devices (property_number TEXT UNIQUE, manufacturer TEXT, description TEXT, cal_date TEXT, cal_due TEXT, custodian_email TEXT)"
 
         # Tests method output
-        self.assertEqual(C.create_cal_table('test_devices'), test_result)
+        self.assertEqual(C.create_cal_table("test_devices"), test_result)
 
     @patch("builtins.print")
     @patch("builtins.input")
@@ -255,14 +258,25 @@ class TestCal_Database(unittest.TestCase):
                 "john_doe1337@gmail.com",
             )
         )
-    
+
     @patch("builtins.print")
     @patch("builtins.input")
     def test_select(self, mocked_input, mocked_print) -> True:
         # Actual test
-        mocked_input.side_effect = ["SELECT * FROM devices WHERE property_number = 'b000001'"]
+        mocked_input.side_effect = [
+            "SELECT * FROM devices WHERE property_number = 'b000001'"
+        ]
         C.select()
-        mocked_print.assert_called_with(('b000001', 'Durgod', 'Keyboard', '08/02/2023', '08/18/2024', 'jane_doe@gmail.com'))
+        mocked_print.assert_called_with(
+            (
+                "b000001",
+                "Durgod",
+                "Keyboard",
+                "08/02/2023",
+                "08/18/2024",
+                "jane_doe@gmail.com",
+            )
+        )
 
     @patch("builtins.input")
     def test_delete_device(self, mocked_input) -> True:
@@ -270,29 +284,51 @@ class TestCal_Database(unittest.TestCase):
         test_sqlquery = "DELETE FROM devices WHERE property_number = 'b000001'"
         test_message = "Device deleted!"
         test_result = [test_sqlquery, test_message]
-        mocked_input.side_effect = ['b000001']
-        
+        mocked_input.side_effect = ["b000001"]
+
         # Test method output
         actual_sqlquery, actual_message = C.delete_device()
         actual_result = [actual_sqlquery, actual_message]
         self.assertEqual(actual_result, test_result)
-    
+
     @patch("builtins.print")
     @patch("builtins.input")
     def test_append(self, mocked_input, mocked_print) -> True:
-        C.append('test_devices')
-        mocked_input.side_effect = ["SELECT * FROM test_devices WHERE property_number = 'b000006'"]
+        C.append("test_devices")
+        mocked_input.side_effect = [
+            "SELECT * FROM test_devices WHERE property_number = 'b000006'"
+        ]
         C.select()
-        mocked_print.assert_called_with(('b000006', 'Thorlabs', 'Optical Power Meter', '01/01/23', '01/01/24', 'john_doe1337@gmail.com'))
-        
+        mocked_print.assert_called_with(
+            (
+                "b000006",
+                "Thorlabs",
+                "Optical Power Meter",
+                "01/01/23",
+                "01/01/24",
+                "john_doe1337@gmail.com",
+            )
+        )
+
     @patch("builtins.print")
     @patch("builtins.input")
     def test_replace(self, mocked_input, mocked_print) -> True:
-        C.create_cal_table('test_replace_devices')
-        C.replace('test_replace_devices')
-        mocked_input.side_effect = ["SELECT * FROM test_replace_devices WHERE property_number = 'b000005'"]
+        C.create_cal_table("test_replace_devices")
+        C.replace("test_replace_devices")
+        mocked_input.side_effect = [
+            "SELECT * FROM test_replace_devices WHERE property_number = 'b000005'"
+        ]
         C.select()
-        mocked_print.assert_called_with(('b000005', 'Thorlabs', 'Optical Power Meter', '01/02/2023', '01/01/2024', 'john_doe1337@gmail.com'))
+        mocked_print.assert_called_with(
+            (
+                "b000005",
+                "Thorlabs",
+                "Optical Power Meter",
+                "01/02/2023",
+                "01/01/2024",
+                "john_doe1337@gmail.com",
+            )
+        )
 
     @patch("builtins.input")
     def test_update_device(self, mocked_input) -> True:
@@ -308,9 +344,84 @@ class TestCal_Database(unittest.TestCase):
             "01/01/2023",
         ]
 
-        actual_sqlquery, actual_message = C.update_device('test_replace_devices')
+        actual_sqlquery, actual_message = C.update_device("test_replace_devices")
         actual_list = [actual_sqlquery, actual_message]
         self.assertEqual(actual_list, test_list)
+
+    def test_save_csv(self) -> True:
+        # Initialize comparison result
+        C.save_csv("test_replace_devices", "test_save.csv")
+        test_list = [
+            [
+                "property_number",
+                "manufacturer",
+                "description",
+                "cal_date",
+                "cal_due",
+                "custodian_email",
+            ],
+            [
+                "b000001",
+                "Durgod",
+                "Keyboard",
+                "08/02/2023",
+                "08/18/2024",
+                "jane_doe@gmail.com",
+            ],
+            [
+                "b000002",
+                "National Instruments",
+                "PXIe 5160 Oscilloscope",
+                "03/02/2023",
+                "03/02/2024",
+                "john_doe1337@gmail.com",
+            ],
+            [
+                "b000003",
+                "Fluke",
+                "Digital Multi-meter",
+                "08/03/2022",
+                "08/03/2023",
+                "john_doe1337@gmail.com",
+            ],
+            [
+                "b000004",
+                "Newport",
+                "Optical Detector",
+                "07/01/2022",
+                "07/01/2023",
+                "john_doe1337@gmail.com",
+            ],
+            [
+                "b000005",
+                "Thorlabs",
+                "Optical Power Meter",
+                "01/02/2023",
+                "01/01/2024",
+                "john_doe1337@gmail.com",
+            ],
+        ]
+
+        actual_list = []
+
+        # Reads the saved csv file
+        with open("test_save.csv") as csv_file_obj:
+            csv_reader_obj = csv.reader(csv_file_obj)
+
+            for row in csv_reader_obj:
+                actual_list.append(row)
+
+        self.assertEqual(actual_list, test_list)        
+
+    @freeze_time("2023-08-21")
+    def test_date_math(self) -> True:
+        # Initialize test value
+
+        test_value = -20
+
+        # Actual Test
+        self.assertEqual(C.date_math("08/01/2023"), -20)
+
 
 # Main Program
 if __name__ == "__main__":
