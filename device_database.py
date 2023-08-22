@@ -259,7 +259,7 @@ class Cal_Database:
         message = "Device deleted!"
         return sqlquery, message
 
-    def update_device(self):
+    def update_device(self, table_name='devices'): #TESTED
         """Updates or edits device information from the database table"""
 
         finished = False
@@ -279,7 +279,7 @@ class Cal_Database:
                         value = input("Enter the new value. \n").strip()
 
                     sqlquery = (
-                        "UPDATE devices SET "
+                        "UPDATE " + table_name + " SET "
                         + col
                         + " = '"
                         + value
