@@ -26,7 +26,7 @@ class Cal_Database:
         load_dotenv()
         # self.remind()
 
-    def sql_execute(self, sqlquery='', message=''): #TESTED
+    def sql_execute(self, sqlquery='', message=''):
         """Accepts SQLite string command then executes"""
 
         try:
@@ -36,7 +36,7 @@ class Cal_Database:
         except Exception and Error as e:
             print("Error: " + str(e))
 
-    def sql_executemany(self, sqlquery='', device_list=[], message=''): #TESTED
+    def sql_executemany(self, sqlquery='', device_list=[], message=''):
         """Accepts SQLite parameters (sql string and list of tuples) then uses executemany"""
 
         try:
@@ -46,7 +46,7 @@ class Cal_Database:
         except Exception and Error as e:
             print("Error: " + str(e))
 
-    def create_cal_table(self, table_name='devices'): #TESTED
+    def create_cal_table(self, table_name='devices'):
         """Creates a new calibration table named devices if table does not exist"""
 
         sqlquery = "CREATE TABLE IF NOT EXISTS " + table_name + " (property_number TEXT UNIQUE, manufacturer TEXT, description TEXT, cal_date TEXT, cal_due TEXT, custodian_email TEXT)"
@@ -54,7 +54,7 @@ class Cal_Database:
         self.conn.commit()
         return sqlquery
 
-    def generate_devices_list(self): #TESTED
+    def generate_devices_list(self):
         """Populates a complete device data list from the devices table"""
 
         self.devices.clear()
@@ -65,7 +65,7 @@ class Cal_Database:
 
         return self.devices
 
-    def generate_property_list(self): #TESTED
+    def generate_property_list(self):
         """Populates a property number list from the devices table"""
 
         self.property_numbers.clear()
@@ -76,7 +76,7 @@ class Cal_Database:
 
         return self.property_numbers
 
-    def pn_prompt(self): #TESTED
+    def pn_prompt(self):
         """Prompts users for a property number"""
 
         finished = False
@@ -88,7 +88,7 @@ class Cal_Database:
                 print("Error: Property number does not exist")
         return prompt
 
-    def pn_prompt_add(self): #TESTED
+    def pn_prompt_add(self):
         """Prompts users for a property number for the add command"""
 
         finished = False
@@ -100,7 +100,7 @@ class Cal_Database:
                 finished = True
         return prompt
 
-    def date_prompt(self): #TESTED
+    def date_prompt(self):
         """Prompts user for a calibration date"""
 
         finished = False
@@ -113,7 +113,7 @@ class Cal_Database:
                 print("Error: " + str(e))
         return prompt
 
-    def due_prompt(self): #TESTED
+    def due_prompt(self):
         """Prompts user for a calibration due date"""
 
         finished = False
@@ -126,7 +126,7 @@ class Cal_Database:
                 print("Error: " + str(e))
         return prompt
 
-    def column_prompt(self): #TESTED
+    def column_prompt(self):
         """Prompts user for the table column"""
 
         column_dict = {
@@ -151,7 +151,7 @@ class Cal_Database:
         print(prompt)
         return prompt
 
-    def display_column_names(self): #TESTED
+    def display_column_names(self):
         """Displays the column names into the terminal"""
 
         sqlquery = "SELECT * FROM devices"
@@ -159,7 +159,7 @@ class Cal_Database:
         column_names = tuple(map(lambda x: x[0], column.description))
         return column_names
 
-    def display_data(self): #TESTED
+    def display_data(self):
         """Displays all data from the database table"""
 
         try:
@@ -175,7 +175,7 @@ class Cal_Database:
             print("Error: " + str(e))
             return e
 
-    def select(self): #TESTED
+    def select(self):
         """Displays data using advanced SQL commands. Most useful for advanced SELECT searches. Refer to sqlite3 documentation for proper syntax."""
 
         try:
@@ -187,7 +187,7 @@ class Cal_Database:
             print("Error: " + str(e))
             return e
 
-    def add_device(self): #TESTED
+    def add_device(self):
         """Adds a device to the database"""
 
         pn_prompt = self.pn_prompt_add()
@@ -213,7 +213,7 @@ class Cal_Database:
 
         return sqlquery, new_device, message
 
-    def append(self, table_name='devices'): #TESTED
+    def append(self, table_name='devices'):
         """Add devices from a csv file called additional_data.csv"""
 
         try:
@@ -226,7 +226,7 @@ class Cal_Database:
             print("Error: " + str(e))
             return e
 
-    def replace(self, table_name='devices'): #TESTED
+    def replace(self, table_name='devices'):
         """replaces data in the devices table with data from a csv file called calibration_data.csv"""
 
         try:
@@ -239,7 +239,7 @@ class Cal_Database:
             print("Error: " + str(e))
             return e
 
-    def delete_device(self): #TESTED
+    def delete_device(self):
         """Given a property number, deletes a device from the database"""
 
         finished = False
@@ -259,7 +259,7 @@ class Cal_Database:
         message = "Device deleted!"
         return sqlquery, message
 
-    def update_device(self, table_name='devices'): #TESTED
+    def update_device(self, table_name='devices'):
         """Updates or edits device information from the database table"""
 
         finished = False
@@ -299,7 +299,7 @@ class Cal_Database:
         message = "Device updated!"
         return sqlquery, message
 
-    def save_csv(self, table_name="devices", file_name="calibration_data.csv"): #TESTED
+    def save_csv(self, table_name="devices", file_name="calibration_data.csv"):
         """Saves the table content to a csv file named calibration_data.csv"""
 
         sqlquery = "SELECT * FROM " + table_name
@@ -313,7 +313,7 @@ class Cal_Database:
         message = "File saved!"
         print(message)
 
-    def date_math(self, cal_due): #TESTED
+    def date_math(self, cal_due):
         """Computes the remaining days until calibration expiration"""
 
         try:
@@ -328,7 +328,7 @@ class Cal_Database:
             # "Error: Date not in the correct format (mm/dd/yyyy)"
             return e
 
-    def generate_email_list(self): #TESTED
+    def generate_email_list(self):
         """Adds into a list custodian email with expiring devices"""
 
         try:

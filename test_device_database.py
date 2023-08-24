@@ -1,6 +1,10 @@
 import unittest
 import csv
-import datetime
+import imaplib
+import email
+import yaml
+import os
+from dotenv import load_dotenv, dotenv_values
 from freezegun import freeze_time
 from unittest import mock
 from unittest.mock import patch
@@ -416,12 +420,56 @@ class TestCal_Database(unittest.TestCase):
     @freeze_time("2023-08-21")
     def test_date_math(self) -> True:
         # Initialize test value
-
         test_value = -20
 
         # Actual Test
         self.assertEqual(C.date_math("08/01/2023"), -20)
 
+    def test_send_email_gmail(self):
+        """Sends an email reminder to personal gmail, then reads the email. Needs user credential files to work."""
+
+        C.send_email_gmail(os.getenv("EMAIL"))
+
+        test_email_subject = 'Calibration Reminder'
+
+        with open("credentials.yml") as f:
+            content = f.read()
+
+        my_credentials = yaml.load(content, Loader=yaml.FullLoader)
+
+        email_address, email_password = my_credentials["user"], my_credentials["password"]
+
+        imap_server = "imap.gmail.com"
+
+        imap = imaplib.IMAP4_SSL(imap_server)
+        imap.login(email_address, email_password)
+
+        imap.select("Inbox")
+
+        _, msgnums = imap.search(None, 'BODY', 'calibrated.')
+
+        mail_id_list = msgnums[0].split()
+
+        print(mail_id_list)
+
+        msgs = []
+
+        for num in mail_id_list:
+            typ, data = imap.fetch(num, '(RFC822)')
+            msgs.append(data)
+
+        for msg in msgs[::-1]:
+            for response_part in msg:
+                if type(response_part) is tuple:
+                    my_msg=email.message_from_bytes((response_part[1]))
+                    print("___________________________")
+                    print("subj:", my_msg['subject'])
+                    for part in my_msg.walk():
+                        print(part.get_content_type())
+                    if part.get_content_type() == 'text/plain':
+                        print(part.get_payload())
+
+        self.assertEqual(my_msg['subject'], test_email_subject)
 
 # Main Program
 if __name__ == "__main__":
