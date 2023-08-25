@@ -24,10 +24,11 @@ class Cal_Database:
         self.create_cal_table()
         self.generate_devices_list()
         self.generate_property_list()
-        load_dotenv()
         # self.remind()
+        load_dotenv()
+        
 
-    def sql_execute(self, sqlquery='', message=''):
+    def sql_execute(self, sqlquery="", message=""):
         """Accepts SQLite string command then executes"""
 
         try:
@@ -37,7 +38,7 @@ class Cal_Database:
         except Exception and Error as e:
             print("Error: " + str(e))
 
-    def sql_executemany(self, sqlquery='', device_list=[], message=''):
+    def sql_executemany(self, sqlquery="", device_list=[], message=""):
         """Accepts SQLite parameters (sql string and list of tuples) then uses executemany"""
 
         try:
@@ -47,10 +48,14 @@ class Cal_Database:
         except Exception and Error as e:
             print("Error: " + str(e))
 
-    def create_cal_table(self, table_name='devices'):
+    def create_cal_table(self, table_name="devices"):
         """Creates a new calibration table named devices if table does not exist"""
 
-        sqlquery = "CREATE TABLE IF NOT EXISTS " + table_name + " (property_number TEXT UNIQUE, manufacturer TEXT, description TEXT, cal_date TEXT, cal_due TEXT, custodian_email TEXT)"
+        sqlquery = (
+            "CREATE TABLE IF NOT EXISTS "
+            + table_name
+            + " (property_number TEXT UNIQUE, manufacturer TEXT, description TEXT, cal_date TEXT, cal_due TEXT, custodian_email TEXT)"
+        )
         self.cur.execute(sqlquery)
         self.conn.commit()
         return sqlquery
@@ -136,7 +141,7 @@ class Cal_Database:
         """Prompts user for an email address"""
 
         finished = False
-        email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+        email_pattern = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b"
 
         while not finished:
             prompt = input("Enter custodian email address.\n").strip()
@@ -145,7 +150,6 @@ class Cal_Database:
             else:
                 print("Error: Invalid email format")
         return prompt
-
 
     def column_prompt(self):
         """Prompts user for the table column"""
@@ -234,7 +238,7 @@ class Cal_Database:
 
         return sqlquery, new_device, message
 
-    def append(self, table_name='devices'):
+    def append(self, table_name="devices"):
         """Add devices from a csv file called additional_data.csv"""
 
         try:
@@ -247,7 +251,7 @@ class Cal_Database:
             print("Error: " + str(e))
             return e
 
-    def replace(self, table_name='devices'):
+    def replace(self, table_name="devices"):
         """replaces data in the devices table with data from a csv file called calibration_data.csv"""
 
         try:
@@ -280,7 +284,7 @@ class Cal_Database:
         message = "Device deleted!"
         return sqlquery, message
 
-    def update_device(self, table_name='devices'):
+    def update_device(self, table_name="devices"):
         """Updates or edits device information from the database table"""
 
         finished = False
@@ -302,7 +306,9 @@ class Cal_Database:
                         value = input("Enter the new value. \n").strip()
 
                     sqlquery = (
-                        "UPDATE " + table_name + " SET "
+                        "UPDATE "
+                        + table_name
+                        + " SET "
                         + col
                         + " = '"
                         + value
