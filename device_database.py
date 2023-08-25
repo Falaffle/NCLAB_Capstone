@@ -1,4 +1,5 @@
 import pandas as pd
+import re
 import sqlite3
 import os
 import ssl
@@ -80,7 +81,7 @@ class Cal_Database:
         """Prompts users for a property number"""
 
         finished = False
-        while finished == False:
+        while not finished:
             prompt = input("Enter device property number.\n").strip()
             if prompt in self.property_numbers:
                 finished = True
@@ -92,7 +93,7 @@ class Cal_Database:
         """Prompts users for a property number for the add command"""
 
         finished = False
-        while finished == False:
+        while not finished:
             prompt = input("Enter device property number.\n").strip()
             if prompt in self.property_numbers:
                 print("Error: Property number already exists")
@@ -104,11 +105,16 @@ class Cal_Database:
         """Prompts user for a calibration date"""
 
         finished = False
-        while finished == False:
+        while not finished:
             try:
-                prompt = input("Enter calibration date.\n").strip()
-                datetime.strptime(prompt, "%m/%d/%Y").date()
-                finished = True
+                prompt = input("Enter calibration date (MM/DD/YYYY).\n").strip()
+                date_entered = datetime.strptime(prompt, "%m/%d/%Y").date()
+                date_today = date.today().strftime("%m/%d/%Y")
+                date_today = datetime.strptime(date_today, "%m/%d/%Y").date()
+                if date_entered <= date_today:
+                    finished = True
+                else:
+                    print("Error: Date exceeds current date")
             except ValueError or TypeError as e:
                 print("Error: " + str(e))
         return prompt
@@ -117,14 +123,29 @@ class Cal_Database:
         """Prompts user for a calibration due date"""
 
         finished = False
-        while finished == False:
+        while not finished:
             try:
-                prompt = input("Enter calibration due date.\n").strip()
+                prompt = input("Enter calibration due date (MM/DD/YYYY).\n").strip()
                 datetime.strptime(prompt, "%m/%d/%Y").date()
                 finished = True
             except ValueError or TypeError as e:
                 print("Error: " + str(e))
         return prompt
+
+    def email_prompt(self):
+        """Prompts user for an email address"""
+
+        finished = False
+        email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+
+        while not finished:
+            prompt = input("Enter custodian email address.\n").strip()
+            if re.match(email_pattern, prompt):
+                finished = True
+            else:
+                print("Error: Invalid email format")
+        return prompt
+
 
     def column_prompt(self):
         """Prompts user for the table column"""
@@ -139,7 +160,7 @@ class Cal_Database:
         }
 
         finished = False
-        while finished == False:
+        while not finished:
             prompt = input("Enter column name.\n").lower().strip()
             if prompt in column_dict.values():
                 finished = True
@@ -195,7 +216,7 @@ class Cal_Database:
         des_prompt = input("Enter device description.\n").strip()
         date_prompt = self.date_prompt()
         due_prompt = self.due_prompt()
-        email_prompt = input("Enter custodian email.\n").strip()
+        email_prompt = self.email_prompt()
 
         new_device = [
             (
@@ -275,6 +296,8 @@ class Cal_Database:
                         value = self.date_prompt()
                     elif col == "cal_due":
                         value = self.due_prompt()
+                    elif col == "custodian_email":
+                        value = self.email_prompt()
                     else:
                         value = input("Enter the new value. \n").strip()
 
@@ -393,7 +416,7 @@ class Cal_Database:
         """Displays the commands and its description"""
 
         print("LIST OF COMMANDS\n")
-        print("ADD - " + self.add.__doc__ + "\n")
+        print("ADD - " + self.add_device.__doc__ + "\n")
         print("APPEND - " + self.append.__doc__ + "\n")
         print("DELETE - " + self.delete_device.__doc__ + "\n")
         print("DISPLAY - " + self.display_data.__doc__ + "\n")
@@ -477,5 +500,4 @@ class Cal_Database:
 
 # Main program:
 C = Cal_Database()
-C.create_cal_table('test_devices')
 C.start()

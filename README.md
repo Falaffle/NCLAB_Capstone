@@ -8,6 +8,7 @@ Contents
 ========
 
  * [Overview](#Overview)
+ * [Required Libraries](#Required-Libraries)
  * [Software Startup](#Software-Startup)
  * [Initialization](#Initialization)
  * [Columns](#Columns)
@@ -30,6 +31,20 @@ Our facility needed a way to keep track of calibrated instruments. This software
 + Remind custodians of upcoming device calibration expiration.
 
 With this, we'll be able to be more proactive with sending instruments for calibration before expiration.
+
+### Required Libraries
+
+The following libraries are required for proper software operation. These are:
+
++ `sqlite3` - A library that implements a small, fast, self-contained, full-featured SQL database engine.
++ `pandas` - A data analysis library that aids with converting csv to sqlite commands and vice-versa
++ `dotenv` - The module used to load environment variables from a .env file. Necessary for email privacy.
++ `smtplib` - The module used for sending email reminders.
++ `email` - The library used to as the object model for the email reminder.
++ `ssl` - A module that provides encryption and peer authentication when sending email reminders.
++ `os` - The miscellaneous operating system module assists loading the .env file.
++ `datetime` - The library used for handling the calibration dates and date math.
++ `re` - The regular expression library used for checking the email format.
 
 ### Software Startup
 
