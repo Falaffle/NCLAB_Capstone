@@ -40,7 +40,7 @@ The following libraries are required for proper software operation. These are:
 + `pandas` - A data analysis library that aids with converting csv to sqlite commands and vice-versa
 + `dotenv` - The module used to load environment variables from a .env file. Necessary for email privacy.
 + `smtplib` - The module used for sending email reminders.
-+ `email` - The library used to as the object model for the email reminder.
++ `email` - The library used for creating the object model for the email reminder.
 + `ssl` - A module that provides encryption and peer authentication when sending email reminders.
 + `os` - The miscellaneous operating system module assists loading the .env file.
 + `datetime` - The library used for handling the calibration dates and date math.
