@@ -173,7 +173,6 @@ class Cal_Database:
                 finished = True
             else:
                 print("Error: Column name does not exist")
-        print(prompt)
         return prompt
 
     def display_column_names(self):
@@ -397,8 +396,6 @@ class Cal_Database:
                 smtp.login(email_sender, email_password)
                 smtp.sendmail(email_sender, email_receiver, em.as_string())
 
-            print("Reminders sent!")
-
         except Exception as e:
             print("Error: " + str(e) + " check .env file.")
             return e
@@ -411,6 +408,8 @@ class Cal_Database:
             if email_list != []:
                 for i in email_list:
                     self.send_email_gmail(i)
+                print("Reminders sent!")
+
             else:
                 print("No upcoming device calibration required.")
 
